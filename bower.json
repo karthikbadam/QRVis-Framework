@@ -1,0 +1,19 @@
+{
+  "name": "qrvis",
+  "version": "0.0.1",
+  "authors": [
+    "karthikbadam <sbadam@umd.edu>"
+  ],
+  "description": "Visualization across devices with d3 and vega",
+  "private": true,
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3" : "*",
+    "vega": "*"
+  }
+}

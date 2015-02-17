@@ -1,0 +1,35 @@
+{
+    "name": "qrvis",
+    "version": "0.0.1",
+    "description": "Visualization across devices with d3 and vega",
+    "keywords": [
+        "qrvis",
+        "vega",
+        "visualization",
+        "grammar",
+        "d3"
+    ],
+    "author": {
+        "name": "Karthik Badam"
+    },
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "main": "index.js",
+    "bin": {
+
+    },
+    "dependencies": {
+        "vega": "*",
+        "d3": "*",
+        "canvas": "1.1.6",
+        "optimist": "0.6.1",
+        "topojson": "1.6.18",
+        "d3-geo-projection": "0.2.12"
+    },
+    "devDependencies": {
+        "uglify-js": "2.4.16",
+        "vows": "0.8.1"
+    }
+}
