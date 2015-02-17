@@ -23,13 +23,13 @@
     "dependencies": {
         "vega": "*",
         "d3": "*",
-        "canvas": "1.1.6",
-        "optimist": "0.6.1",
-        "topojson": "1.6.18",
-        "d3-geo-projection": "0.2.12"
+        "canvas": "*",
+        "optimist": "*",
+        "topojson": "*",
+        "d3-geo-projection": "*"
     },
     "devDependencies": {
-        "uglify-js": "2.4.16",
-        "vows": "0.8.1"
+        "uglify-js": "*",
+        "vows": "*"
     }
 }

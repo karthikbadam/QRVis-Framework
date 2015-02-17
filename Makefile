@@ -7,87 +7,41 @@ LOCALE ?= en_US
 .PHONY: all test clean install
 
 all: \
-	vega.js \
-	vega.min.js
+	qrvis.js \
+	qrvis.min.js
 
-vega.js: \
-	src/core/_start.js \
+qrvis.js: \
+	src/_start.js \
 	src/_package.js \
-	src/_config.js \
-	src/core/Bounds.js \
-	src/core/Gradient.js \
-	src/canvas/_package.js \
-	src/canvas/path.js \
-	src/canvas/marks.js \
-	src/canvas/Renderer.js \
-	src/canvas/Handler.js \
-	src/svg/_package.js \
-	src/svg/marks.js \
-	src/svg/Renderer.js \
-	src/svg/Handler.js \
-	src/data/_package.js \
-	src/data/load.js \
-	src/data/read.js \
-	src/data/aggregate.js \
-	src/data/array.js \
-	src/data/bin.js \
-	src/data/copy.js \
-	src/data/cross.js \
-	src/data/facet.js \
-	src/data/filter.js \
-	src/data/flatten.js \
-	src/data/fold.js \
-	src/data/force.js \
-	src/data/formula.js \
-	src/data/geo.js \
-	src/data/geopath.js \
-	src/data/link.js \
-	src/data/pie.js \
-	src/data/slice.js \
-	src/data/sort.js \
-	src/data/stack.js \
-	src/data/stats.js \
-	src/data/treemap.js \
-	src/data/truncate.js \
-	src/data/unique.js \
-	src/data/window.js \
-	src/data/wordcloud.js \
-	src/data/zip.js \
-	src/parse/_package.js \
-	src/parse/axes.js \
-	src/parse/data.js \
-	src/parse/dataflow.js \
-	src/parse/expr.js \
-	src/parse/legends.js \
-	src/parse/mark.js \
-	src/parse/marks.js \
-	src/parse/padding.js \
-	src/parse/properties.js \
-	src/parse/scales.js \
-	src/parse/spec.js \
-	src/parse/transform.js \
-	src/scene/_package.js \
-	src/scene/Item.js \
-	src/scene/visit.js \
-	src/scene/build.js \
-	src/scene/bounds.js \
-	src/scene/encode.js \
-	src/scene/transition.js \
-	src/scene/axis.js \
-	src/scene/legend.js \
-	src/core/Model.js \
-	src/core/View.js \
-	src/core/Spec.js \
-	src/headless/_package.js \
-	src/headless/View.js \
-	src/headless/render.js \
-	src/core/_end.js
+	src/generator/_package.js \
+	src/generator/qrcode.js \
+	src/generator/generator.js \
+    src/reader/_package.js \
+    src/reader/alignpat.js \
+    src/reader/bitmat.js \
+    src/reader/bmparser.js \
+    src/reader/datablock.js \
+    src/reader/databr.js \
+    src/reader/datamask.js \
+    src/reader/decoder.js \
+    src/reader/detector.js \
+    src/reader/errorlevel.js \
+    src/reader/findpat.js \
+    src/reader/formatinf.js \
+    src/reader/gf256.js \
+    src/reader/gf256poly.js \
+    src/reader/grid.js \
+    src/reader/qrcode2.js \
+    src/reader/rsdecoder.js \
+    src/reader/version.js \
+    src/reader/reader.js \
+	src/_end.js
 
 %.min.js: %.js Makefile
 	@rm -f $@
 	$(JS_COMPILER) < $< > $@
 
-vega.js: Makefile
+qrvis.js: Makefile
 	@rm -f $@
 	cat $(filter %.js,$^) > $@
 	@chmod a-w $@
@@ -100,4 +54,4 @@ test: all
 	@npm test
 
 clean:
-	rm -f vega*.js
+	rm -f qrvis*.js

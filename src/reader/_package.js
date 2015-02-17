@@ -1,1 +1,1 @@
-qrvis.read = {}
+qrvis.read = {};
