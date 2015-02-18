@@ -17,23 +17,23 @@ qrvis.js: \
 	src/generator/qrcode.js \
 	src/generator/generator.js \
     src/reader/_package.js \
-    src/reader/alignpat.js \
-    src/reader/bitmat.js \
-    src/reader/bmparser.js \
-    src/reader/datablock.js \
-    src/reader/databr.js \
-    src/reader/datamask.js \
-    src/reader/decoder.js \
-    src/reader/detector.js \
-    src/reader/errorlevel.js \
-    src/reader/findpat.js \
-    src/reader/formatinf.js \
-    src/reader/gf256.js \
-    src/reader/gf256poly.js \
     src/reader/grid.js \
-    src/reader/qrcode2.js \
-    src/reader/rsdecoder.js \
     src/reader/version.js \
+    src/reader/detector.js \
+    src/reader/formatinf.js \
+    src/reader/errorlevel.js \
+    src/reader/bitmat.js \
+    src/reader/datablock.js \
+    src/reader/bmparser.js \
+    src/reader/datamask.js \
+    src/reader/rsdecoder.js \
+    src/reader/gf256poly.js \
+    src/reader/gf256.js \
+    src/reader/decoder.js \
+    src/reader/qrcode2.js \
+    src/reader/findpat.js \
+    src/reader/alignpat.js \
+    src/reader/databr.js \
     src/reader/reader.js \
 	src/_end.js
 

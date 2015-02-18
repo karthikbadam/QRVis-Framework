@@ -43,14 +43,14 @@ qrvis.generate = (function () {
         qrcode = new QRCode(document.getElementById("animCanvas"), {
             width: 300,
             height: 300,
-            id: "QRcode"
+            id: "QRcode"+id
         });
 
         var qrText = JSON.stringify(JSON.parse(data));
 
         var packets = stringSplitter(qrText);
 
-        var qrelement = document.getElementById("QRcode");
+        var qrelement = document.getElementById("QRcode"+id);
 
         for (var i = 0; i < packets.length; i++) {
 
@@ -65,7 +65,7 @@ qrvis.generate = (function () {
                 "copy": true,
                 "delay": 200
             });
-
+            console.log(packets[i]);
         }
 
         gif.on('finished', function (blob) {
