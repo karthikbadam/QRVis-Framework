@@ -38,9 +38,11 @@ $(document).ready(function () {
 
             //add QR code
             //var data = JSON.stringify(JSONC.compress( JSON.parse(response.responseText) ));
-            var data = JSON.stringify(JSON.parse(response.responseText));
+            //var data = JSON.stringify(JSON.parse(response.responseText));
 
-            qrvis.generate("QRCodesAnim-" + filename, 'viz-' + filename, 20, data);
+            var data = JSON.stringify(jsonpack.pack(JSON.parse(response.responseText)));
+
+            qrvis.generate("QRCodesAnim-" + filename, 'viz-' + filename, 10, data);
 
             //JSON.stringify(response.responseText);
             console.log(data.length);

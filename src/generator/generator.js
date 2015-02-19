@@ -57,7 +57,7 @@ qrvis.generate = (function () {
             var d = {};
             d.l = i + 1;
             d.t = packets.length;
-            d.s = String(packets[i]);
+            d.s = packets[i];
 
             qrcode.makeCode(JSON.stringify(d));
 
