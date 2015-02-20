@@ -791,7 +791,7 @@ var QRCode;
 		this._htOption = {
 			width : 256, 
 			height : 256,
-			typeNumber : 4,
+			typeNumber : 19,
 			colorDark : "#000000",
 			colorLight : "#ffffff",
 			correctLevel : QRErrorCorrectLevel.H,
