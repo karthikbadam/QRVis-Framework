@@ -1,6 +1,6 @@
 var content = [
     'jobs',
-    'scatter', 
+    'scatter',
     'arc'
 ];
 
@@ -39,10 +39,23 @@ $(document).ready(function () {
             //add QR code
             //var data = JSON.stringify(JSONC.compress( JSON.parse(response.responseText) ));
             //var data = JSON.stringify(JSON.parse(response.responseText));
+            var w = 300;
+            var h = 300;
 
-            var data = JSON.stringify(jsonpack.pack(JSON.parse(response.responseText)));
+            var spec = JSON.parse(response.responseText);
 
-            qrvis.generate("QRCodesAnim-" + filename, 'viz-' + filename, 10, data);
+            if (spec.width) {
+                if (spec.width < spec.height)
+                   w = spec.width;
+                else 
+                   w = spec.height;
+            }
+            
+            h = w;
+
+            var data = JSON.stringify(jsonpack.pack(spec));
+
+            qrvis.generate("QRCodesAnim-" + filename, 'viz-' + filename, 10, data, w, h);
 
             //JSON.stringify(response.responseText);
             console.log(data.length);

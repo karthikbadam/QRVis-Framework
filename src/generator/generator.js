@@ -2,7 +2,7 @@ qrvis.generate = (function () {
 
 
     //takes input ID and number of frames in QR code
-    var generator = function (id, parentID, n, data) {
+    var generator = function (id, parentID, n, data, w, h) {
 
 
         //split a string
@@ -41,8 +41,8 @@ qrvis.generate = (function () {
         }
 
         qrcode = new QRCode(document.getElementById("animCanvas"), {
-            width: 300,
-            height: 300,
+            width: w,
+            height: h,
             id: "QRcode"+id
         });
 
