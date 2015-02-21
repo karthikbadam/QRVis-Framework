@@ -791,7 +791,7 @@ var QRCode;
 		this._htOption = {
 			width : 256, 
 			height : 256,
-			typeNumber : 19,
+			typeNumber : 10,
 			colorDark : "#000000",
 			colorLight : "#ffffff",
 			correctLevel : QRErrorCorrectLevel.H,
@@ -927,7 +927,7 @@ qrvis.generate = (function () {
             var d = {};
             d.l = i + 1;
             d.t = packets.length;
-            d.s = String(packets[i]);
+            d.s = packets[i];
 
             qrcode.makeCode(JSON.stringify(d));
 
@@ -944,6 +944,7 @@ qrvis.generate = (function () {
             var gifElement = document.createElement('img');
 
             gifElement.setAttribute("id", id);
+            gifElement.setAttribute("class", "qrgif");
 
             gifElement.setAttribute("src", URL.createObjectURL(blob));
 

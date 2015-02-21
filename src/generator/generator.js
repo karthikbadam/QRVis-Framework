@@ -74,6 +74,7 @@ qrvis.generate = (function () {
             var gifElement = document.createElement('img');
 
             gifElement.setAttribute("id", id);
+            gifElement.setAttribute("class", "qrgif");
 
             gifElement.setAttribute("src", URL.createObjectURL(blob));
 
