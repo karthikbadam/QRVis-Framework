@@ -5,3 +5,7 @@
 .vega {
     display:inline-block;
 }
+
+.viz {
+    padding-top: 50px; 
+}
