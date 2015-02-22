@@ -1,5 +1,7 @@
 .qrgif {
     display:inline-block;
+    position: absolute;
+    float: right;
 }
 
 .vega {
