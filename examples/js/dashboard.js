@@ -12,10 +12,14 @@ var ved = {
 
 $(document).ready(function () {
 
+     $('#outdiv').innerHTML = "";
+            $('#QRcapture').hide();
+            $('#vizdashboard').show();
+    
     content.forEach(function (filename) {
 
         //create a div for the visualization
-        $("body").append('<div id="viz-' + filename + '" class= "viz" ></div>');
+        $("#vizdashboard").append('<div id="viz-' + filename + '" class= "viz" ></div>');
 
         var divID = "#viz-" + filename;
         //Vega to create visualization
