@@ -1,7 +1,7 @@
 var content = [
-    'jobs',
+    //'jobs',
     'scatter',
-    'arc'
+    //'arc'
 ];
 
 var ved = {

@@ -9,7 +9,7 @@ var gUM = false;
 var webkit = false;
 var moz = false;
 var v = null;
-var captureCanvas = false;
+var captureCanvas = true;
 
 var videoSelect = document.querySelector('select#videoSource');
 
@@ -29,11 +29,12 @@ function gotSources(sourceInfos) {
         if (sourceInfo.kind === 'video') {
 
             option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+            
             videoSelect.appendChild(option);
 
         } else {
 
-            console.log('Some other kind of source: ', sourceInfo);
+            //console.log('Some other kind of source: ', sourceInfo);
 
         }
     }
@@ -199,13 +200,13 @@ function captureToCanvas() {
     if (gUM) {
         try {
             gCtx.drawImage(v, 0, 0, gCanvas.width, gCanvas.height);
-            if (!captureCanvas)
+            if (captureCanvas)
 
                 setTimeout(captureToCanvas, 130);
 
         } catch (e) {
             console.log(e);
-            if (!captureCanvas)
+            if (captureCanvas)
                 setTimeout(captureToCanvas, 130);
         };
     }
@@ -223,7 +224,7 @@ function read(a) {
    
     console.log("read frame");
 
-    captureCanvas = false;
+    captureCanvas = true;
     var message = JSON.parse(a);
 
     var total = message.t;
@@ -259,6 +260,7 @@ function read(a) {
 
     if (check) {
         allLoaded = true;
+        captureCanvas = false;
         var messagePassed = "";
         for (var i = 0; i < total; i++) {
             messagePassed = messagePassed + msg[i].s;
@@ -266,7 +268,9 @@ function read(a) {
        
     var message = JSON.stringify(jsonpack.unpack(messagePassed));
         
-     console.log(message);
+    
+    //console.log(message);
+    alert(message);
     
     }
 }
@@ -348,11 +352,11 @@ function replaceWebcam() {
     var n = navigator;
     v = document.getElementById("v");
     if (!!window.stream) {
-        v.src = null;
+        
         window.stream.stop();
+        v.src = null;
     }
 
-    var audioSource = audioSelect.value;
     var videoSource = videoSelect.value;
 
     var constraints = {
@@ -408,12 +412,13 @@ function initiate() {
 
 $(document).ready(function () {
 
+    
     $('#captureButton').click(function () {
 
         
         //show video if not present
         if (!$('#outdiv').html()) {
-
+            captureCanvas = true;
             $('#QRcapture').show();
             $('#vizdashboard').hide();
             initiate();
@@ -425,6 +430,8 @@ $(document).ready(function () {
 
         //show blank screen for visualization
         if ($('#outdiv').html()) {
+            window.stream.stop();
+
             $('#outdiv').empty();
             $('#QRcapture').hide();
             $('#vizdashboard').show();
