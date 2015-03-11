@@ -22,7 +22,7 @@ function createVisualization(qrcontent) {
     //Vega to create visualization
 
     //create a div for the visualization
-    $("#vizdashboard").append('<div id="' + divID + '" class= "viz" ></div>');
+    $("#vizdashboard").append('<div id="div-' + filename + '" class= "viz" ></div>');
 
 
     ved.spec = content;
