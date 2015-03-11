@@ -16,6 +16,11 @@ $(document).ready(function () {
             $('#QRcapture').hide();
             $('#vizdashboard').show();
     
+    
+    
+    //TODO
+    
+    
     content.forEach(function (filename) {
 
         //create a div for the visualization
