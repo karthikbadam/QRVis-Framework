@@ -10,17 +10,50 @@ var ved = {
     renderType: "svg"
 };
 
+function createVisualization(qrcontent) {
+
+    qrcontent = qrcontent.replace(/\\"/gi, "");
+
+    var content = JSON.parse(qrcontent);
+
+    var filename = "arc" + "-viz";
+
+    var divID = "#div-" + filename;
+    //Vega to create visualization
+
+    //create a div for the visualization
+    $("#vizdashboard").append('<div id="' + divID + '" class= "viz" ></div>');
+
+
+    ved.spec = content;
+    try {
+        vg.parse.spec(ved.spec, function (chart) {
+            d3.select(divID).selectAll("*").remove();
+            var view = chart({
+                el: divID,
+                data: ved.data,
+                renderer: ved.renderType
+            });
+
+            (ved.view = view).update();
+        });
+    } catch (e) {
+        console.log(e.stack);
+    };
+
+}
+
+
+
 $(document).ready(function () {
 
-     $('#outdiv').innerHTML = "";
-            $('#QRcapture').hide();
-            $('#vizdashboard').show();
-    
-    
-    
+    $('#outdiv').innerHTML = "";
+    $('#QRcapture').hide();
+    $('#vizdashboard').show();
+
+
+
     //TODO
-    
-    
     content.forEach(function (filename) {
 
         //create a div for the visualization
@@ -55,11 +88,11 @@ $(document).ready(function () {
 
             if (spec.width) {
                 if (spec.width < spec.height)
-                   w = spec.width;
-                else 
-                   w = spec.height;
+                    w = spec.width;
+                else
+                    w = spec.height;
             }
-            
+
             h = w;
 
             var data = JSON.stringify(jsonpack.pack(spec));

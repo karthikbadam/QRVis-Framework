@@ -11,6 +11,8 @@ var moz = false;
 var v = null;
 var captureCanvas = true;
 
+var readQRContent = "";
+
 var videoSelect = document.querySelector('select#videoSource');
 
 var msg = null;
@@ -29,7 +31,7 @@ function gotSources(sourceInfos) {
         if (sourceInfo.kind === 'video') {
 
             option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
-            
+
             videoSelect.appendChild(option);
 
         } else {
@@ -63,7 +65,7 @@ function initCanvas(w, h) {
     gCanvas.addEventListener('touchend', cropper.end, false);
 
 
-    
+
     $('#readQR').click(function () {
         decodeQR();
 
@@ -79,9 +81,9 @@ function decodeQR() {
         // single thread programming for wimps
         var decoded = qrcode.decode();
 
-      
+
     } catch (e) {
-        console.log(e);
+        console.log(e.stack);
     };
 
     if (!allLoaded) {
@@ -196,7 +198,7 @@ function CroppingTool() {
 
 
 function captureToCanvas() {
-    
+
     if (gUM) {
         try {
             gCtx.drawImage(v, 0, 0, gCanvas.width, gCanvas.height);
@@ -205,7 +207,7 @@ function captureToCanvas() {
                 setTimeout(captureToCanvas, 130);
 
         } catch (e) {
-            console.log(e);
+            console.log(e.stack);
             if (captureCanvas)
                 setTimeout(captureToCanvas, 130);
         };
@@ -221,7 +223,7 @@ var counter = 0;
 var loader;
 
 function read(a) {
-   
+
     console.log("read frame");
 
     captureCanvas = true;
@@ -265,13 +267,16 @@ function read(a) {
         for (var i = 0; i < total; i++) {
             messagePassed = messagePassed + msg[i].s;
         }
-       
-    var message = JSON.stringify(jsonpack.unpack(messagePassed));
-        
-    
-    //console.log(message);
-    alert(message);
-    
+
+        var message = JSON.stringify(jsonpack.unpack(messagePassed));
+
+        console.log(message);
+        alert(message);
+
+        readQRContent = message;
+
+
+
     }
 }
 
@@ -316,7 +321,7 @@ function setwebcam() {
     }
 
     var videoSource = videoSelect.value;
-    
+
     var constraints = {
         audio: false,
         video: {
@@ -348,11 +353,11 @@ function setwebcam() {
 }
 
 function replaceWebcam() {
-    
+
     var n = navigator;
     v = document.getElementById("v");
     if (!!window.stream) {
-        
+
         window.stream.stop();
         v.src = null;
     }
@@ -383,9 +388,9 @@ function replaceWebcam() {
         n.mozGetUserMedia(constraints, success, error);
 
     }
-    
+
     setTimeout(captureToCanvas, 500);
-    
+
 }
 
 
@@ -400,11 +405,11 @@ function initiate() {
 
         initCanvas(width, height);
         qrcode.callback = read;
-        
+
         MediaStreamTrack.getSources(gotSources);
 
     } else {
-    
+
         console.log("failed initiation");
     }
 }
@@ -412,10 +417,10 @@ function initiate() {
 
 $(document).ready(function () {
 
-    
+
     $('#captureButton').click(function () {
 
-        
+
         //show video if not present
         if (!$('#outdiv').html()) {
             captureCanvas = true;
@@ -429,13 +434,15 @@ $(document).ready(function () {
     $('#analyzeButton').click(function () {
 
         //show blank screen for visualization
-        if ($('#outdiv').html()) {
-            window.stream.stop();
 
-            $('#outdiv').empty();
-            $('#QRcapture').hide();
-            $('#vizdashboard').show();
-        }
+        if (readQRContent != "")
+            createVisualization(readQRContent);
+
+        window.stream.stop();
+
+        $('#outdiv').empty();
+        $('#QRcapture').hide();
+        $('#vizdashboard').show();
 
     });
 
