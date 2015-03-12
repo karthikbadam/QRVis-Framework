@@ -1,9 +1,3 @@
-var content = [
-    //'jobs',
-    'scatter',
-    //'arc'
-];
-
 var ved = {
     version: 0.1,
     data: undefined,
@@ -12,20 +6,22 @@ var ved = {
 
 function createVisualization(qrcontent) {
 
+    //fixing the excessive quotes
+
     qrcontent = qrcontent.replace(/\\"/gi, "");
 
     var content = JSON.parse(qrcontent);
 
+    //sometimes they dont have names
     var filename = "arc" + "-viz";
 
     var divID = "#div-" + filename;
-    //Vega to create visualization
 
     //create a div for the visualization
     $("#vizdashboard").append('<div id="div-' + filename + '" class= "viz" ></div>');
 
-
     ved.spec = content;
+
     try {
         vg.parse.spec(ved.spec, function (chart) {
             d3.select(divID).selectAll("*").remove();
@@ -37,22 +33,22 @@ function createVisualization(qrcontent) {
 
             (ved.view = view).update();
         });
+
     } catch (e) {
         console.log(e.stack);
     };
 
 }
 
-
-
 $(document).ready(function () {
 
-    $('#outdiv').innerHTML = "";
-    $('#QRcapture').hide();
-    $('#vizdashboard').show();
-
-
-
+    if (document.getElementById("outdiv") && document.getElementById("QRcapture")) {
+        $('#outdiv').innerHTML = "";
+        $('#QRcapture').hide();
+        $('#vizdashboard').show();
+    }
+    
+    
     //TODO
     content.forEach(function (filename) {
 
@@ -81,6 +77,7 @@ $(document).ready(function () {
             //add QR code
             //var data = JSON.stringify(JSONC.compress( JSON.parse(response.responseText) ));
             //var data = JSON.stringify(JSON.parse(response.responseText));
+
             var w = 300;
             var h = 300;
 
