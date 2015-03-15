@@ -30,8 +30,10 @@ Business.prototype.addReview = function (business_id, text, stars) {
     
     var _self = this; 
     
-    _self.allBusinessObject[business_id].reviews.push(text);
-    _self.allBusinessObject[business_id].stars.push(stars);
+    if (business_id && _self.allBusinessObject[business_id]) {
+        _self.allBusinessObject[business_id].reviews.push(text);
+        _self.allBusinessObject[business_id].stars.push(stars);
+    }
     
 }
 

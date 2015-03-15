@@ -7,9 +7,12 @@ var files = ['data/yelp_training_set_review2.csv', 'data/yelp_training_set_busin
 var width = 960,
     height = 600;
 
+var business;
 
 $(document).ready(function () {
 
+    business = new Business();
+    
     //queue for handling file reading
     var q = queue();
 
@@ -30,7 +33,8 @@ $(document).ready(function () {
                         d.useful = +d.useful;
                         d.text = String(d.text);
                         d.date = String(d.date);
-                        //console.log(d.text);
+                        
+                        business.addReview(d.business_id, d.text, d.stars);
 
                     } else if (i == 1) {
 
@@ -42,6 +46,8 @@ $(document).ready(function () {
                         d.stars = +d.stars;
                         d.latitude = parseFloat(d.latitude);
                         d.longitude = parseFloat(d.longitude);
+                        
+                        business.addBusiness(d.business_id, d.latitude, d.longitude, d.categories1, d.categories2, d.stars);
 
                         console.log("lat: " + d.latitude + ", long: " + d.longitude);
                     }
