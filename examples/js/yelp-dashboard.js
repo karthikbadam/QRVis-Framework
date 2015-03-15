@@ -1,4 +1,4 @@
-var files = ['data/yelp_training_set_review2.csv', 'data/yelp_training_set_business2.csv'];
+var files = ['data/yelp_training_set_business2.csv', 'data/yelp_training_set_review2.csv'];
 
 // Reviews: user_id, cool, business_id, funny, stars, date, useful, text
 
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
                 data.forEach(function (d) {
 
-                    if (i == 0) {
+                    if (i == 1) {
 
                         d.user_id = String(d.user_id);
                         d.business_id = String(d.business_id);
@@ -36,7 +36,7 @@ $(document).ready(function () {
                         
                         business.addReview(d.business_id, d.text, d.stars);
 
-                    } else if (i == 1) {
+                    } else if (i == 0) {
 
                         d.business_id = String(d.business_id);
                         d.categories1 = String(d.categories1);

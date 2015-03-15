@@ -15,7 +15,7 @@ Business.prototype.addBusiness = function (business_id, lat, lon, category1, cat
     var business = {};
     business.business_id = business_id;
     business.lat = lat; 
-    business.long = long; 
+    business.long = lon; 
     business.category1 = category1;
     business.category2 = category2;
     business.reviews = [];
@@ -23,7 +23,7 @@ Business.prototype.addBusiness = function (business_id, lat, lon, category1, cat
     business.rating = rating; 
 
     //_self.allBusiness.push(business);
-    _self.allBusinessObject.business_id = business;
+    _self.allBusinessObject[business_id] = business;
 }
 
 Business.prototype.addReview = function (business_id, text, stars) {
