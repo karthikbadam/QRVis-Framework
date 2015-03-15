@@ -26,7 +26,7 @@ $(document).ready(function () {
                         d.user_id = String(d.user_id);
                         d.business_id = String(d.business_id);
                         d.funny = +d.funny;
-                        d.stars = +d.stars;
+                        d.stars = parseFloat(d.stars);
                         d.useful = +d.useful;
                         d.text = String(d.text);
                         d.date = String(d.date);
@@ -40,7 +40,7 @@ $(document).ready(function () {
                         d.categories2 = String(d.categories2);
                         d.review_count = +d.review_count;
                         d.name = String(d.name);
-                        d.stars = +d.stars;
+                        d.stars = parseFloat(d.stars);
                         d.latitude = parseFloat(d.latitude);
                         d.longitude = parseFloat(d.longitude);
 
@@ -67,5 +67,5 @@ function createVisualization() {
     
     business.createGeoVisualization();
     business.createTreemap();
-
+    business.createCompanies();
 }
