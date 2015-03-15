@@ -66,6 +66,6 @@ $(document).ready(function () {
 function createVisualization() {
     
     business.createGeoVisualization();
-    
+    business.createTreemap();
 
 }

@@ -94,11 +94,11 @@ Business.prototype.createGeoVisualization = function () {
             .style("stroke", "gray");
 
         svg.append("g")
-            .attr("class", "bubble")
             .selectAll("circle")
             .data(_self.convertToArray())
             .enter()
             .append("circle")
+            .attr("class", "bubble")
             .attr("transform", function (d) {
                 return "translate(" + projection([d.lon, d.lat]) + ")";
 
@@ -122,15 +122,18 @@ Business.prototype.createGeoVisualization = function () {
 };
 
 Business.prototype.createTreemap = function () {
+    var _self = this;
 
-    var width = 480,
+    var width = 450,
         height = 600;
 
     var treemap = d3.layout.treemap()
         .size([width, height])
         .sticky(true)
         .value(function (d) {
-            return d.size;
+            return d.value / 10;
+        }).sort(function (a, b) {
+            return a.value - b.value;
         });
 
     var div = _self.treemap = d3.select("#vizdashboard").append("div")
@@ -138,24 +141,25 @@ Business.prototype.createTreemap = function () {
         .style("width", width + "px")
         .style("height", height + "px")
 
-    var node = div.datum(root).selectAll(".treemap-node")
+    var parentPosition = $(".treemap").offset();
+
+    var node = div.datum(_self.getCategories())
+        .selectAll(".treemap-node")
         .data(treemap.nodes)
         .enter().append("div")
         .attr("class", "treemap-node")
         .call(position)
-        .style("background", function (d) {
-            return d.children ? color(d.name) : null;
-        })
         .text(function (d) {
-            return d.children ? null : d.name;
+            return d.children ? null : d.key;
         });
+
 
     function position() {
         this.style("left", function (d) {
-                return d.x + "px";
+                return parentPosition.left + 1 + d.x + "px";
             })
             .style("top", function (d) {
-                return d.y + "px";
+                return parentPosition.top + 1 + d.y + "px";
             })
             .style("width", function (d) {
                 return Math.max(0, d.dx - 1) + "px";
@@ -165,5 +169,50 @@ Business.prototype.createTreemap = function () {
             });
     }
 
+};
+
+Business.prototype.getCategories = function () {
+
+    var _self = this;
+    _self.allCategories = {};
+    _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
+
+    for (var i = 0; i < _self.allBusinessKeys.length; i++) {
+
+        var key = _self.allBusinessKeys[i];
+
+        var category1 = _self.allBusinessObject[key].category1;
+        var category2 = _self.allBusinessObject[key].category2;
+
+        if (_self.allCategories[category1]) {
+
+            _self.allCategories[category1] ++;
+
+        } else {
+
+            _self.allCategories[category1] = 1;
+
+        }
+
+        if (_self.allCategories[category2]) {
+
+            _self.allCategories[category2] ++;
+
+        } else {
+
+            _self.allCategories[category2] = 1;
+
+        }
+    }
+
+
+    _self.allCategories = d3.entries(_self.allCategories).sort(function (a, b) {
+        return b.value - a.value;
+    });;
+
+    return {
+        "key": "Categories",
+        "children": _self.allCategories
+    };
 
 };
