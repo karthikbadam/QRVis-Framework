@@ -57,6 +57,10 @@ Business.prototype.convertToArray = function () {
         _self.allBusiness.push(b);
 
     }
+    
+    _self.allBusiness.sort(function (a, b) {
+            return b.rating - a.rating;
+        });
 
 
     return _self.allBusiness;
@@ -85,6 +89,7 @@ Business.prototype.createGeoVisualization = function () {
         .range([0, 15]);
 
     var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
+        .attr("id", "geosvg")
         .attr("width", width)
         .attr("height", height);
 
@@ -124,7 +129,10 @@ Business.prototype.createGeoVisualization = function () {
             .style("font-size", "25px");
 
     });
-
+    
+    
+     var qrcode = new QRVis({parentId: "geosvg"});
+     qrcode.makeQR();
 
 };
 
@@ -218,7 +226,12 @@ Business.prototype.createTreemap = function () {
                 return Math.max(0, d.dy - 1) + "px";
             });
 
+    
     }
+    
+    
+     var qrcode = new QRVis({parentId: "treemapViz"});
+     qrcode.makeQR();
 
 };
 
