@@ -21,15 +21,16 @@ QRVis.prototype.addDimensions = function (width, height, type, aspectRatio) {
 
 }
 
-QRVis.prototype.addData = function (filename, dataAttributes) {
+QRVis.prototype.addData = function (name, filename, dataAttributes) {
 
     var _self = this; 
     
-    if (_self.content.data) {
+    if (!_self.content.data) {
         _self.content.data = [];
     }
     
     _self.content.data.push({
+        name: name,
         filename: filename,
         attributes: dataAttributes
     });
@@ -40,7 +41,7 @@ QRVis.prototype.addScales = function (name, type, domain, range) {
     
     var _self = this; 
     
-    if (_self.content.scales) {
+    if (!_self.content.scales) {
         _self.content.scales = [];
     }
     
@@ -53,11 +54,11 @@ QRVis.prototype.addScales = function (name, type, domain, range) {
     
 }
 
-QRVis.prototype.addMarks = function (type, from, enter, update, hover, device) {
+QRVis.prototype.addMarks = function (type, from, device, enter, update, hover) {
     
     var _self = this; 
     
-    if (_self.content.marks) {
+    if (!_self.content.marks) {
         _self.content.marks = [];
     }
     
