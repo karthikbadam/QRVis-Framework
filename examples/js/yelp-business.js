@@ -71,7 +71,7 @@ Business.prototype.createGeoVisualization = function () {
 
     var formatNumber = d3.format(",.0f");
 
-    var projection = d3.geo.albers()
+    var projection = _self.projection = d3.geo.albers()
         .translate([width / 2, height / 2])
         .scale([28000])
         .rotate([108, 0, 0])
@@ -199,7 +199,7 @@ Business.prototype.createTreemap = function () {
 
         });
 
-
+        _self.updateViewsTreemap(selections);
 
 
     });
@@ -299,6 +299,70 @@ Business.prototype.createCompanies = function () {
         });
 
 };
+
+
+Business.prototype.updateViewsTreemap = function (selection) {
+
+    var _self = this;
+
+    _self.dataSelected = [];
+    //get business object 
+    for (var i = 0; i < _self.allBusiness.length; i++) {
+        var d = _self.allBusiness[i];
+
+        if (selection.indexOf(d.category1) >= 0 || selection.indexOf(d.category2) >= 0) {
+            _self.dataSelected.push(d);
+        }
+    }
+
+    var companySelect = _self.reviews.selectAll(".companies-node");
+    companySelect.remove();
+
+    var nodes = companySelect
+        .data(_self.dataSelected)
+        .enter().append("div")
+        .attr("class", "companies-node");
+
+    nodes.append("text")
+        .text(function (d) {
+            return d.name;
+        });
+
+    nodes.append("span")
+        .attr("class", "stars")
+        .append("span")
+        .style("width", function (d) {
+            return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
+        });
+
+     _self.geosvg
+        .selectAll("circle")
+        .style("fill-opacity", 0.001)
+        .style("stroke-width", "0px")
+        .style("z-index", 0);
+
+    _self.geosvg
+        .selectAll("circle")
+        .data(_self.dataSelected)
+        .attr("transform", function (d) {
+            return "translate(" + _self.projection([d.lon, d.lat]) + ")";
+
+        })
+        .style("z-index", 100)
+        .style("fill-opacity", 0.3)
+        .style("border", "solid 1px white")
+        .style("stroke-width", 0.5)
+        .attr("r", function (d) {
+            return 3 + d.review_count / 30;
+
+        })
+        .append("title")
+        .text(function (d) {
+            return d.name;
+        });
+
+}
+
 
 
 function selectionTool(elementId) {
@@ -449,7 +513,8 @@ function selectionTool(elementId) {
         _self.height = height;
 
         _self.endSelection(_self.left, _self.top, _self.width, _self.height);
-
+        
+        d3.select("#highlightRect").remove();
     };
 
     this.onEnd = function (endSelection) {
