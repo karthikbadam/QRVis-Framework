@@ -143,14 +143,22 @@ Business.prototype.createTreemap = function () {
             return a.value - b.value;
         });
 
+
     var div = _self.treemap = d3.select("#vizdashboard").append("div")
         .attr("class", "treemap")
+        .attr("id", "treemapViz")
         .style("width", width + "px")
         .style("height", height + "px")
 
+    var s = new selectionTool("treemapViz");
+
+    div.on("mousedown", s.start);
+    div.on("mousemove", s.move);
+    div.on("mouseup", s.end);
+
     var parentPosition = $(".treemap").offset();
 
-    var node = div.datum(_self.getCategories())
+    var nodes = div.datum(_self.getCategories())
         .selectAll(".treemap-node")
         .data(treemap.nodes)
         .enter().append("div")
@@ -160,6 +168,41 @@ Business.prototype.createTreemap = function () {
             return d.children ? null : d.key;
         });
 
+    s.setNodes(nodes);
+
+    s.onEnd(function (left, top, width, height) {
+
+        var selections = [];
+
+        nodes.each(function (d) {
+            var nodeLeft = parentPosition.left + 1 + d.x;
+            var nodeTop = parentPosition.top + 1 + d.y;
+            var nodeWidth = Math.max(0, d.dx - 1);
+            var nodeHeight = Math.max(0, d.dy - 1);
+
+            if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+
+                selections.push(d.key);
+                d3.select(this).attr("class", "treemap-node-selected");
+
+
+            } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+                nodeTop < top + height && nodeTop + nodeHeight > top) {
+
+                selections.push(d.key);
+
+                d3.select(this).attr("class", "treemap-node-selected");
+
+            } else {
+                d3.select(this).attr("class", "treemap-node");
+            }
+
+        });
+
+
+
+
+    });
 
     function position() {
         this.style("left", function (d) {
@@ -174,6 +217,7 @@ Business.prototype.createTreemap = function () {
             .style("height", function (d) {
                 return Math.max(0, d.dy - 1) + "px";
             });
+
     }
 
 };
@@ -229,7 +273,7 @@ Business.prototype.createCompanies = function () {
 
     var _self = this;
 
-    var width = 1420,
+    var width = 1410,
         height = 200;
 
     var div = _self.reviews = d3.select("#vizdashboard").append("div")
@@ -241,21 +285,176 @@ Business.prototype.createCompanies = function () {
         .data(_self.convertToArray())
         .enter().append("div")
         .attr("class", "companies-node");
-    
+
     nodes.append("text")
         .text(function (d) {
             return d.name;
         });
-    
+
     nodes.append("span")
         .attr("class", "stars")
         .append("span")
         .style("width", function (d) {
-            return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px" ;
+            return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
-    
-    
+
+};
 
 
+function selectionTool(elementId) {
+    var _self = this;
+    var offset = $("#" + elementId).offset();
+    var offsetx = offset.left;
+    var offsety = offset.top;
+
+    this.setNodes = function (nodes) {
+
+        _self.nodes = nodes;
+
+    };
+
+    this.start = function () {
+
+        var event = d3.event;
+
+        var x = 0;
+        var y = 0;
+
+        event.preventDefault();
+
+        if (event.type == "touchstart") {
+            x = event.changedTouches[0].clientX;
+            y = event.changedTouches[0].clientY;
+
+        } else {
+
+            x = event.clientX;
+            y = event.clientY;
+        }
+
+        _self.startx = x;
+        _self.starty = y;
+
+        $('#highlightRect').remove();
+
+        if (!_self.started) {
+
+            d3.select("#" + elementId).append("div")
+                .attr("id", "highlightRect")
+                .style({
+                    width: 5 + "px",
+                    height: 5 + "px",
+                    left: x + "px",
+                    top: y + "px",
+                    border: "solid 1px #222",
+                    "background-color": "rgba(255, 170, 170, 0.2)",
+                    position: "absolute"
+                });
+        }
+
+        _self.started = true;
+    };
+
+    this.move = function () {
+        var event = d3.event;
+
+        event.preventDefault();
+
+        if (_self.started) {
+            var x = 0;
+            var y = 0;
+
+            if (event.type == "touchmove") {
+                x = event.changedTouches[0].clientX;
+                y = event.changedTouches[0].clientY;
+            } else {
+                x = event.clientX;
+                y = event.clientY;
+            }
+
+            var left = _self.startx;
+            var top = _self.starty;
+
+            if (x < _self.startx)
+                left = x;
+
+            if (y < _self.starty)
+                top = y;
+
+
+            d3.select("#highlightRect")
+                .style({
+                    width: Math.abs(x - _self.startx) + "px",
+                    height: Math.abs(y - _self.starty) + "px",
+                    left: left + "px",
+                    top: top + "px",
+                    border: "solid 1px #222",
+                    "background-color": "rgba(255, 170, 170, 0.2)",
+                });
+
+        }
+
+    };
+
+    this.end = function () {
+
+        var event = d3.event;
+
+        var x = 0;
+        var y = 0;
+
+        var left = _self.startx;
+        var top = _self.starty;
+
+        event.preventDefault();
+
+        if (event.type == "touchend") {
+            x = event.changedTouches[0].clientX - offsetx;
+            y = event.changedTouches[0].clientY - offsety;
+        } else {
+            x = event.clientX;
+            y = event.clientY;
+        }
+
+        if (_self.started) {
+
+            if (x < _self.startx)
+                left = x;
+
+            if (y < _self.starty)
+                top = y;
+
+
+            d3.select("#highlightRect")
+                .style({
+                    width: Math.abs(x - _self.startx) + "px",
+                    height: Math.abs(y - _self.starty) + "px",
+                    left: left + "px",
+                    top: top + "px",
+                    border: "solid 1px #222",
+                    "background-color": "rgba(255, 170, 170, 0.2)",
+                });
+
+
+        }
+
+        _self.started = false;
+
+        var width = Math.abs(x - _self.startx);
+        var height = Math.abs(y - _self.starty);
+
+        _self.left = left;
+        _self.top = top;
+        _self.width = width;
+        _self.height = height;
+
+        _self.endSelection(_self.left, _self.top, _self.width, _self.height);
+
+    };
+
+    this.onEnd = function (endSelection) {
+
+        _self.endSelection = endSelection;
+    };
 
 };
