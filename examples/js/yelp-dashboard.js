@@ -64,8 +64,12 @@ $(document).ready(function () {
 });
 
 function createVisualization() {
-    
-    business.createGeoVisualization();
-    business.createTreemap();
-    business.createCompanies();
+
+    if (device == "big") {
+
+        business.createGeoVisualization();
+        business.createTreemap();
+        business.createCompanies();
+
+    }
 }

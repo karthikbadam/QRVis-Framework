@@ -57,109 +57,108 @@ Business.prototype.convertToArray = function () {
         _self.allBusiness.push(b);
 
     }
-    
+
     _self.allBusiness.sort(function (a, b) {
-            return b.rating - a.rating;
-        });
+        return b.rating - a.rating;
+    });
 
 
     return _self.allBusiness;
 }
 
-Business.prototype.createGeoVisualization = function () {
+Business.prototype.createGeoVisualization = function (qrcontent) {
 
     var _self = this;
 
-    var width = 960,
-        height = 600;
-    
-    var qrcode = new QRVis({parentId: "geosvg"});
-    
+    qrcontent = qrcontent.replace(/\\"/gi, "");
+
+    var content = JSON.parse(qrcontent);
+
+    var width = content.width * $(document).width(),
+        height = content.height * $(document).height();
+
+    if (content.aspectRatio) {
+        width = height * content.aspectRatio;
+    }
+
+    //var qrcode = new QRVis({parentId: "geosvg"});
+
     /* adding dimensions */
-    qrcode.addDimensions(width, height, "map");
-    
-    var formatNumber = d3.format(",.0f");
-    
-    var projection = _self.projection = d3.geo.albers()
-        .translate([width / 2, height / 2])
-        .scale([28000])
-        .rotate([108, 0, 0])
-        .translate([1900, -2250]);
-    
-    var path = d3.geo.path()
-        .projection(projection);
+    //qrcode.addDimensions(width, height, "svg");
 
-    var radius = d3.scale.sqrt()
-        .domain([0, 1e6])
-        .range([0, 15]);
+    var projection = _self.projection;
 
-    var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
-        .attr("id", "geosvg")
-        .attr("width", width)
-        .attr("height", height);
-    
-    var url = "data/us-arizona-counties.json"; 
-    
-    var properties = {
-        type: "geopath",
-        projection: "albersUsa",
-        translateX: parseFloat(1900/width).toFixed(2),
-        translateY: parseFloat(-2250/height).toFixed(2),
-        scale: 28000
-    };
-    
-    /* add map data */
-    qrcode.addData("counties", url, properties);
-    
-    /* add marker data */
-    qrcode.addData("business", "allBusiness", {});
-    
-    d3.json(url, function (error, json) {
-        if (error) return console.error(error);
+    var data = content.data[0];
+    if (data.attributes == "albersUsa") {
 
-        svg.selectAll("path")
-            .data(json.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .style("fill", "#efefef")
-            .style("stroke-width", "2")
-            .style("stroke", "gray");
-        
-        // add path marks 
-        qrcode.addMarks ("path", {data: "counties"}, "big", {path: {field: "path"}}, {}, {});
-        
-        svg.append("g")
-            .selectAll("circle")
-            .data(_self.convertToArray())
-            .enter()
-            .append("circle")
-            .attr("class", "bubble")
-            .attr("transform", function (d) {
-                return "translate(" + projection([d.lon, d.lat]) + ")";
+        projection = _self.projection = d3.geo.albers()
+            .scale([data.attributes.scale])
+            .rotate([108, 0, 0])
+            .translate([data.attributes.translateX * width, -data.attributes.translateY * height]);
 
-            })
-            .attr("r", function (d) {
-                return 3 + d.review_count / 30;
+        _self.path = d3.geo.path()
+            .projection(projection);
 
-            })
-            .append("title")
-            .text(function (d) {
-                return d.name;
-            });
-        
-        
-        // add circles 
-        qrcode.addMarks ("circle", {data: "business"}, "big", {transform: {scale: "projection", "field": "[d.lon, d.lat]"}, radius: {field: "3 + d.review_count/30"}}, {}, {});
-        
-        svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
-            .text("Phoenix, Arizona")
-            .style("font-size", "25px");
-            
-            qrcode.makeQR();
-    });
-    
-     
+        _self.url = data.filename;
+
+    }
+
+    for (var i = 1; i < content.data.length; i++) {
+        var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
+            .attr("id", "geosvg")
+            .attr("width", width)
+            .attr("height", height);
+
+
+        d3.json(_self.url, function (error, json) {
+            if (error) return console.error(error);
+
+            var marks = content.marks;
+
+            var type = marks[0].type;
+            var field = marks[0].properties.enter["path"].field;
+
+            svg.selectAll(type)
+                .data(json.features)
+                .enter()
+                .append(type)
+                .attr("d", eval(field))
+                .style("fill", "#efefef")
+                .style("stroke-width", "2")
+                .style("stroke", "gray");
+
+            type = marks[1].type;
+            var scale = marks[1].properties.enter["transform"].scale;
+            var field1 = marks[1].properties.enter["transform"].field;
+
+            var field2 = marks[1].properties.enter["radius"].field;
+
+            svg.append("g")
+                .selectAll("circle")
+                .data(_self.convertToArray())
+                .enter()
+                .append("circle")
+                .attr("class", "bubble")
+                .attr("transform", function (d) {
+                    return "translate(" + eval(scale + "(" + field1 + ")") + ")";
+
+                })
+                .attr("r", function (d) {
+                    return eval(field2);
+
+                })
+                .append("title")
+                .text(function (d) {
+                    return d.name;
+                });
+
+
+            svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
+                .text("Phoenix, Arizona")
+                .style("font-size", "25px");
+
+        });
+    }
 
 };
 
@@ -253,12 +252,14 @@ Business.prototype.createTreemap = function () {
                 return Math.max(0, d.dy - 1) + "px";
             });
 
-    
+
     }
-    
-    
-     var qrcode = new QRVis({parentId: "treemapViz"});
-     //qrcode.makeQR();
+
+
+    var qrcode = new QRVis({
+        parentId: "treemapViz"
+    });
+    //qrcode.makeQR();
 
 };
 
@@ -375,7 +376,7 @@ Business.prototype.updateViewsTreemap = function (selection) {
             return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
 
-     _self.geosvg
+    _self.geosvg
         .selectAll("circle")
         .style("fill-opacity", 0.001)
         .style("stroke-width", "0px")
@@ -553,7 +554,7 @@ function selectionTool(elementId) {
         _self.height = height;
 
         _self.endSelection(_self.left, _self.top, _self.width, _self.height);
-        
+
         d3.select("#highlightRect").remove();
     };
 
@@ -562,4 +563,4 @@ function selectionTool(elementId) {
         _self.endSelection = endSelection;
     };
 
-};
+}
