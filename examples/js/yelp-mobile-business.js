@@ -81,11 +81,6 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
         width = height * content.aspectRatio;
     }
 
-    //var qrcode = new QRVis({parentId: "geosvg"});
-
-    /* adding dimensions */
-    //qrcode.addDimensions(width, height, "svg");
-
     var projection = _self.projection;
 
     var data = content.data[0];
@@ -134,10 +129,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
             var field2 = marks[1].properties.enter["radius"].field;
 
             svg.append("g")
-                .selectAll("circle")
+                .selectAll(type)
                 .data(_self.convertToArray())
                 .enter()
-                .append("circle")
+                .append(type)
                 .attr("class", "bubble")
                 .attr("transform", function (d) {
                     return "translate(" + eval(scale + "(" + field1 + ")") + ")";

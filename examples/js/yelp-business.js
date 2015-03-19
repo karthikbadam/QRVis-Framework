@@ -168,6 +168,13 @@ Business.prototype.createTreemap = function () {
 
     var width = 450,
         height = 600;
+    
+    
+    var qrcode = new QRVis({parentId: "treemapViz"});
+
+    /* adding dimensions */
+    qrcode.addDimensions(width, height, "div");
+    
 
     var treemap = d3.layout.treemap()
         .size([width, height])
@@ -257,8 +264,7 @@ Business.prototype.createTreemap = function () {
     }
     
     
-     var qrcode = new QRVis({parentId: "treemapViz"});
-     //qrcode.makeQR();
+    qrcode.makeQR();
 
 };
 
