@@ -57,10 +57,10 @@ Business.prototype.convertToArray = function () {
         _self.allBusiness.push(b);
 
     }
-    
+
     _self.allBusiness.sort(function (a, b) {
-            return b.rating - a.rating;
-        });
+        return b.rating - a.rating;
+    });
 
 
     return _self.allBusiness;
@@ -72,20 +72,22 @@ Business.prototype.createGeoVisualization = function () {
 
     var width = 960,
         height = 600;
-    
-    var qrcode = new QRVis({parentId: "geosvg"});
-    
+
+    var qrcode = new QRVis({
+        parentId: "geosvg"
+    });
+
     /* adding dimensions */
     qrcode.addDimensions(width, height, "map");
-    
+
     var formatNumber = d3.format(",.0f");
-    
+
     var projection = _self.projection = d3.geo.albers()
         .translate([width / 2, height / 2])
         .scale([28000])
         .rotate([108, 0, 0])
         .translate([1900, -2250]);
-    
+
     var path = d3.geo.path()
         .projection(projection);
 
@@ -97,23 +99,23 @@ Business.prototype.createGeoVisualization = function () {
         .attr("id", "geosvg")
         .attr("width", width)
         .attr("height", height);
-    
-    var url = "data/us-arizona-counties.json"; 
-    
+
+    var url = "data/us-arizona-counties.json";
+
     var properties = {
         type: "geopath",
         projection: "albersUsa",
-        translateX: parseFloat(1900/width).toFixed(2),
-        translateY: parseFloat(-2250/height).toFixed(2),
+        translateX: parseFloat(1900 / width).toFixed(2),
+        translateY: parseFloat(-2250 / height).toFixed(2),
         scale: 28000
     };
-    
+
     /* add map data */
     qrcode.addData("counties", url, properties);
-    
+
     /* add marker data */
     qrcode.addData("business", "allBusiness", {});
-    
+
     d3.json(url, function (error, json) {
         if (error) return console.error(error);
 
@@ -125,10 +127,16 @@ Business.prototype.createGeoVisualization = function () {
             .style("fill", "#efefef")
             .style("stroke-width", "2")
             .style("stroke", "gray");
-        
+
         // add path marks 
-        qrcode.addMarks ("path", {data: "counties"}, "big", {path: {field: "path"}}, {}, {});
-        
+        qrcode.addMarks("path", {
+            data: "counties"
+        }, "big", {
+            path: {
+                field: "path"
+            }
+        }, {}, {});
+
         svg.append("g")
             .selectAll("circle")
             .data(_self.convertToArray())
@@ -147,19 +155,29 @@ Business.prototype.createGeoVisualization = function () {
             .text(function (d) {
                 return d.name;
             });
-        
-        
+
+
         // add circles 
-        qrcode.addMarks ("circle", {data: "business"}, "big", {transform: {scale: "projection", "field": "[d.lon, d.lat]"}, radius: {field: "3 + d.review_count/30"}}, {}, {});
-        
+        qrcode.addMarks("circle", {
+            data: "business"
+        }, "big", {
+            transform: {
+                scale: "projection",
+                "field": "[d.lon, d.lat]"
+            },
+            radius: {
+                field: "3 + d.review_count/30"
+            }
+        }, {}, {});
+
         svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
             .text("Phoenix, Arizona")
             .style("font-size", "25px");
-            
-            qrcode.makeQR();
+
+        qrcode.makeQR();
     });
-    
-     
+
+
 
 };
 
@@ -168,13 +186,16 @@ Business.prototype.createTreemap = function () {
 
     var width = 450,
         height = 600;
-    
-    
-    var qrcode = new QRVis({parentId: "treemapViz"});
+
+
+    var qrcode = new QRVis({
+        parentId: "treemapViz"
+    });
+
 
     /* adding dimensions */
     qrcode.addDimensions(width, height, "div");
-    
+
 
     var treemap = d3.layout.treemap()
         .size([width, height])
@@ -197,6 +218,9 @@ Business.prototype.createTreemap = function () {
     div.on("mousedown", s.start);
     div.on("mousemove", s.move);
     div.on("mouseup", s.end);
+
+    //need to add interaction to the QR code
+    //associate it with an update
 
     var parentPosition = $(".treemap").offset();
 
@@ -260,10 +284,10 @@ Business.prototype.createTreemap = function () {
                 return Math.max(0, d.dy - 1) + "px";
             });
 
-    
+
     }
-    
-    
+
+
     qrcode.makeQR();
 
 };
@@ -381,7 +405,7 @@ Business.prototype.updateViewsTreemap = function (selection) {
             return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
 
-     _self.geosvg
+    _self.geosvg
         .selectAll("circle")
         .style("fill-opacity", 0.001)
         .style("stroke-width", "0px")
@@ -559,7 +583,7 @@ function selectionTool(elementId) {
         _self.height = height;
 
         _self.endSelection(_self.left, _self.top, _self.width, _self.height);
-        
+
         d3.select("#highlightRect").remove();
     };
 
