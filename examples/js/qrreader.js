@@ -275,7 +275,7 @@ function read(a) {
 
         readQRContent = message;
 
-
+        $("#progressLoader").empty();
 
     }
 }

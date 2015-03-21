@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-    
-    
+
+
 <head lang="en">
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,21 +42,61 @@
 
 <body>
     
-    <script>
+    <div class="container" style="z-index: 100;">
+        <div class="row">
+            <div class="col-xs-6 btn-div">
+                <button class="btn" id="captureButton"> Capture </button>
+            </div>
+            <div class="col-xs-6 btn-div">
+                <button class="btn" id="analyzeButton"> Analyze </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="QRcapture">
+
+        <div id="camera" class="container">
+            <div class="row">
+
+                <div class="select col-md-6 info-source">
+                    <label for="videoSource">Video source: </label>
+                    <select id="videoSource"></select>
+                </div>
+            </div>
+
+            <div id="workspace" class="row">
+                <div class="select col-md-12">
+                </div>
+            </div>
+
+            <div id="outdiv"></div>
+            <canvas id="qr-canvas"></canvas>
+
+        </div>
+
+        <button id="readQR">Capture</button>
+
+        <div id="progressLoader"> </div>
+
+    </div>
+
+
+    <script type="text/javascript" src="js/jsonpack.js"></script>
+    <script type="text/javascript" src="js/qrreader.js"></script>
     
+    <script>
         var device = "small";
-        
     </script>
 
     <div id="vizdashboard">
 
 
     </div>
-    
-    
-    <script type="text/javascript" src="js/yelp-QR.js"></script>    
-    
-    <script type="text/javascript" src="js/yelp-business.js"></script>    
+
+
+    <script type="text/javascript" src="js/yelp-QR.js"></script>
+
+    <script type="text/javascript" src="js/yelp-business.js"></script>
 
     <script type="text/javascript" src="js/yelp-dashboard.js"></script>
 
