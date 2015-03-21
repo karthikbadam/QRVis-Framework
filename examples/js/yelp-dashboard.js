@@ -48,11 +48,16 @@ $(document).ready(function () {
 
                         console.log("lat: " + d.latitude + ", long: " + d.longitude);
                     }
+                    
+                    
 
                 });
 
                 callback(null, data);
 
+                data = null;
+                delete data;
+                
             });
 
         });

@@ -76,22 +76,28 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
-
+    
+    width = 600; 
+    
     if (content.aspectRatio) {
-        width = height * content.aspectRatio;
+        height = width / content.aspectRatio;
     }
 
     var projection = _self.projection;
+    var path = _self.path; 
 
     var data = content.data[0];
-    if (data.attributes == "albersUsa") {
+    if (data.attributes.projection == "albersUsa") {
 
         projection = _self.projection = d3.geo.albers()
-            .scale([data.attributes.scale])
+            .scale([28000])
             .rotate([108, 0, 0])
-            .translate([data.attributes.translateX * width, -data.attributes.translateY * height]);
+            .translate([width/2, height/2])
+            .translate([1900, -2250]);
+        
+            //.translate([data.attributes.translateX * width, data.attributes.translateY * height]);
 
-        _self.path = d3.geo.path()
+        path = _self.path = d3.geo.path()
             .projection(projection);
 
         _self.url = data.filename;
@@ -118,14 +124,13 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
                 .enter()
                 .append(type)
                 .attr("d", eval(field))
-                .style("fill", "#efefef")
+                .style("fill", "white")
                 .style("stroke-width", "2")
                 .style("stroke", "gray");
 
             type = marks[1].type;
             var scale = marks[1].properties.enter["transform"].scale;
             var field1 = marks[1].properties.enter["transform"].field;
-
             var field2 = marks[1].properties.enter["radius"].field;
 
             svg.append("g")

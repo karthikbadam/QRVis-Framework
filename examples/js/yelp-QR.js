@@ -12,10 +12,11 @@ QRVis.prototype.addDimensions = function (width, height, type, aspectRatio) {
     var _self = this; 
     
     // compute percentages 
-    _self.content.width = parseFloat(width/$(document).width()).toFixed(2);
+    //_self.content.width = parseFloat(width/$(document).width()).toFixed(2);
+    _self.content.width = 0.9;
     _self.content.height = parseFloat(height/$(document).height()).toFixed(2);
     _self.content.type = type; 
-    _self.aspectRatio = aspectRatio? aspectRatio: 0; 
+    _self.content.aspectRatio = aspectRatio? aspectRatio: 1; 
 
 }
 

@@ -80,12 +80,21 @@ Business.prototype.createGeoVisualization = function () {
     /* adding dimensions */
     qrcode.addDimensions(width, height, "map");
 
+    var properties = {
+        type: "geopath",
+        projection: "albersUsa",
+        translateX: parseFloat(1900 / width).toFixed(2),
+        translateY: parseFloat(-2250 / height).toFixed(2),
+        scale: 28000
+    };
+
+
     var formatNumber = d3.format(",.0f");
 
     var projection = _self.projection = d3.geo.albers()
-        .translate([width / 2, height / 2])
         .scale([28000])
         .rotate([108, 0, 0])
+        .translate([width / 2, height / 2])
         .translate([1900, -2250]);
 
     var path = d3.geo.path()
@@ -102,13 +111,6 @@ Business.prototype.createGeoVisualization = function () {
 
     var url = "data/us-arizona-counties.json";
 
-    var properties = {
-        type: "geopath",
-        projection: "albersUsa",
-        translateX: parseFloat(1900 / width).toFixed(2),
-        translateY: parseFloat(-2250 / height).toFixed(2),
-        scale: 28000
-    };
 
     /* add map data */
     qrcode.addData("counties", url, properties);
@@ -124,7 +126,7 @@ Business.prototype.createGeoVisualization = function () {
             .enter()
             .append("path")
             .attr("d", path)
-            .style("fill", "#efefef")
+            .style("fill", "white")
             .style("stroke-width", "2")
             .style("stroke", "gray");
 
@@ -201,7 +203,7 @@ Business.prototype.createTreemap = function () {
         .size([width, height])
         .sticky(true)
         .value(function (d) {
-            return d.value / 10;
+            return Math.pow(d.value, 0.75);
         }).sort(function (a, b) {
             return a.value - b.value;
         });
