@@ -16,8 +16,13 @@ var readQRContent = "";
 var videoSelect = document.querySelector('select#videoSource');
 
 var msg = null;
-
 var vidhtml = '<video id="v" autoplay></video>';
+var allLoaded = false;
+var counter = 0;
+var loader;
+
+var CAPTURE_DELAY = 140; 
+var DECODE_DELAY = 40; 
 
 function gotSources(sourceInfos) {
 
@@ -64,9 +69,8 @@ function initCanvas(w, h) {
     gCanvas.addEventListener('mouseup', cropper.end, false);
     gCanvas.addEventListener('touchend', cropper.end, false);
 
-
-
     $('#readQR').click(function () {
+        
         decodeQR();
 
     });
@@ -84,11 +88,11 @@ function decodeQR() {
 
     } catch (e) {
         console.log(e.stack);
-    };
+    };    
 
     if (!allLoaded) {
 
-        setTimeout(decodeQR, 90);
+        setTimeout(decodeQR, DECODE_DELAY);
     }
 }
 
@@ -204,36 +208,29 @@ function captureToCanvas() {
             gCtx.drawImage(v, 0, 0, gCanvas.width, gCanvas.height);
             if (captureCanvas)
 
-                setTimeout(captureToCanvas, 130);
+                setTimeout(captureToCanvas, CAPTURE_DELAY);
 
         } catch (e) {
             console.log(e.stack);
             if (captureCanvas)
-                setTimeout(captureToCanvas, 130);
+                setTimeout(captureToCanvas, CAPTURE_DELAY);
         };
     }
 }
-
-function htmlEntities(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-var allLoaded = false;
-var counter = 0;
-var loader;
 
 function read(a) {
 
     console.log("read frame");
 
     captureCanvas = true;
+    
     var message = JSON.parse(a);
 
     var total = message.t;
 
     if (msg == null) {
 
-        loader = $("#progressLoader").percentageLoader();
+        loader = $("#progressLoader").percentageLoader({width : 50, height : 50});
 
         msg = [];
         for (var i = 0; i < total; i++) {
@@ -271,6 +268,7 @@ function read(a) {
         var message = JSON.stringify(jsonpack.unpack(messagePassed));
 
         console.log(message);
+        
         alert(message);
 
         readQRContent = message;
@@ -301,7 +299,7 @@ function success(stream) {
 
     gUM = true;
 
-    setTimeout(captureToCanvas, 500);
+    setTimeout(captureToCanvas, CAPTURE_DELAY);
 
 }
 
@@ -349,7 +347,7 @@ function setwebcam() {
 
     }
 
-    setTimeout(captureToCanvas, 500);
+    setTimeout(captureToCanvas, CAPTURE_DELAY);
 }
 
 function replaceWebcam() {
@@ -389,7 +387,7 @@ function replaceWebcam() {
 
     }
 
-    setTimeout(captureToCanvas, 500);
+    setTimeout(captureToCanvas, CAPTURE_DELAY);
 
 }
 
@@ -426,6 +424,11 @@ $(document).ready(function () {
             captureCanvas = true;
             $('#QRcapture').show();
             $('#vizdashboard').hide();
+            allLoaded = false;
+            counter = 0;
+            captureCanvas = true;
+            msg = null;
+            readQRContent = "";
             initiate();
         }
 
@@ -434,7 +437,8 @@ $(document).ready(function () {
     $('#analyzeButton').click(function () {
 
         //show blank screen for visualization
-
+        $('#highlightRect').remove();
+        
         if (readQRContent != "")
             createVisualization(readQRContent);
 

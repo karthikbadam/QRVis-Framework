@@ -63,7 +63,7 @@ $(document).ready(function () {
 
 });
 
-function createVisualization() {
+function createVisualization(readQRContent) {
 
     if (device == "big") {
 
@@ -71,5 +71,10 @@ function createVisualization() {
         business.createTreemap();
         business.createCompanies();
 
+    } else if (device == "small" && readQRContent) {
+    
+       business.createGeoVisualization(readQRContent);
+        
     }
 }
+

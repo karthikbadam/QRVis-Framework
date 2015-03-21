@@ -933,7 +933,7 @@ qrvis.generate = (function () {
 
             gif.addFrame(qrelement, {
                 "copy": true,
-                "delay": 200
+                "delay": 150
             });
             console.log(packets[i]);
         }
