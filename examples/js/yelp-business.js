@@ -89,21 +89,12 @@ Business.prototype.createGeoVisualization = function () {
     var properties = {
         type: "geopath",
         projection: "albersUsa",
-        translateX: parseFloat(1900 / 960).toFixed(2),
-        translateY: parseFloat(-2250 / 600).toFixed(2),
-        scale: 28000
     };
 
     var scale = 60*height/(latBottom-latTop);
 
     var formatNumber = d3.format(",.0f");
 
-//    var projection = _self.projection = d3.geo.albers()
-//        .scale([properties.scale])
-//        .rotate([108, 0, 0])
-//        .translate([width / 2, height / 2])
-//        .translate([properties.translateX * width, properties.translateY * height]);
-    
     var projection = _self.projection = d3.geo.albersUsa()
         .scale([scale])
         .translate([0, 0]);

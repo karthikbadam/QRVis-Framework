@@ -93,10 +93,7 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
     var path = _self.path;
 
     var data = content.data[0];
-
-
-    //if (data.attributes.projection == "albersUsa") {
-
+    
     var scale = 60 * height / (latBottom - latTop);
 
     var formatNumber = d3.format(",.0f");
@@ -109,19 +106,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
     projection.translate([-1 * trans[0], -1 * trans[1]]);
 
-//    projection = _self.projection = d3.geo.albers()
-//        .scale([28000])
-//        .rotate([108, 0, 0])
-//        .translate([width / 2, height / 2])
-//        //.translate([1900, -2250]);
-//        .translate([data.attributes.translateX * width, data.attributes.translateY * height]);
-
     path = _self.path = d3.geo.path()
         .projection(projection);
 
     _self.url = data.filename;
-
-    // }
 
     for (var i = 1; i < content.data.length; i++) {
         var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
@@ -169,14 +157,13 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
                 .append("title")
                 .text(function (d) {
                     return d.name;
-                });
-
-
-            svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
-                .text("Phoenix, Arizona")
-                .style("font-size", "25px");
+                })
 
         });
+        
+        svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
+                .text("Phoenix, Arizona")
+                .style("font-size", "25px");
     }
 
 };

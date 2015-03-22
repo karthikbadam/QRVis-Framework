@@ -22,7 +22,8 @@ var counter = 0;
 var loader;
 
 var CAPTURE_DELAY = 145; 
-var DECODE_DELAY = 70; 
+var DECODE_DELAY = 45; 
+
 
 function gotSources(sourceInfos) {
 
