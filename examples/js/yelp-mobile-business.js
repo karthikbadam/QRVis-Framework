@@ -5,7 +5,7 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
     htmlTags = /(<[^>]*?>|<script.*?<\/script>|<style.*?<\/style>|<head.*?><\/head>)/g,
     matchTwitter = /^https?:\/\/([^\.]*\.)?twitter\.com/;
 
-var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"]; 
+var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"];
 
 function Business(options) {
 
@@ -75,10 +75,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
     qrcontent = qrcontent.replace(/\\"/gi, "");
 
     var content = JSON.parse(qrcontent);
-    
+
     // Transformation 
-    var transformation = 3; 
-    
+    var transformation = 3;
+
     var lonLeft = -112.828974;
     var lonRight = -111.338143;
 
@@ -97,7 +97,7 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
     var path = _self.path;
 
     var data = content.data[0];
-    
+
     var scale = 60 * height / (latBottom - latTop);
 
     var formatNumber = d3.format(",.0f");
@@ -114,18 +114,21 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
         .projection(projection);
 
     _self.url = data.filename;
-    
+
     if (_self.allBusiness.length == 0) {
         _self.allBusiness = _self.convertToArray();
     }
 
-    var selection = content.selections; 
-    
-    
+    var selection = content.selections;
+
+    if (content.selections && content.selections > 0) {
+        topCategoryList = content.selections.length >= 4 ? content.selections.slice(0, 4) : content.selections;
+    }
+
     for (var i = 1; i < content.data.length; i++) {
-        
+
         $("#geosvg").remove();
-        
+
         var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
             .attr("id", "geosvg")
             .attr("width", width)
@@ -165,27 +168,27 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
                 })
                 .style("fill-opacity", function (d) {
-                    
+
                     if (selection.indexOf(d.category1) < 0) {
-                        return 0;  
+                        return 0;
                     }
-                
+
                     if (transformation == 3) {
-                        var opacity = d.rating/5 * 0.2 + 0.001; 
+                        var opacity = d.rating / 5 * 0.2 + 0.001;
                         return opacity;
                     }
-                
+
                     return 0.001;
-                
+
                 })
                 .style("fill", function (d) {
-                   
+
                     if (transformation == 3) {
                         if (topCategoryList.indexOf(d.category1) >= 0) {
                             return colorScale(d.category1);
                         }
                     }
-                    
+
                     return "brown";
                 })
                 .attr("r", function (d) {
@@ -198,25 +201,32 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
                 })
 
         });
-        
+
         svg.append("text").attr("transform", "translate(10," + (height - 30) + ")")
-                .text("Phoenix, Arizona")
-                .style("font-size", "25px");
+            .text("Phoenix, Arizona")
+            .style("font-size", "25px");
     }
 
 };
 
-Business.prototype.createTreemap = function () {
+Business.prototype.createTreemap = function (content) {
     var _self = this;
 
-    var width = 450,
-        height = 600;
+    var width = content.width * $(document).width(),
+        height = content.height * $(document).height();
+
+
+    if (content.aspectRatio) {
+        height = width / content.aspectRatio;
+    }
+
+    var scale = content.scales[0];
 
     var treemap = d3.layout.treemap()
-        .size([width, height])
+        .size(eval(scale.domain))
         .sticky(true)
         .value(function (d) {
-            return d.value / 10;
+            return eval(scale.range) / 10;
         }).sort(function (a, b) {
             return a.value - b.value;
         });
@@ -246,70 +256,80 @@ Business.prototype.createTreemap = function () {
             return d.children ? null : d.key;
         });
 
-    s.setNodes(nodes);
+    var marks = content.marks[0];
 
-    s.onEnd(function (left, top, width, height) {
-
-        var selections = [];
-
-        nodes.each(function (d) {
-            var nodeLeft = parentPosition.left + 1 + d.x;
-            var nodeTop = parentPosition.top + 1 + d.y;
-            var nodeWidth = Math.max(0, d.dx - 1);
-            var nodeHeight = Math.max(0, d.dy - 1);
-
-            if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
-
-                selections.push(d.key);
-                d3.select(this).attr("class", "treemap-node-selected");
-
-
-            } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
-                nodeTop < top + height && nodeTop + nodeHeight > top) {
-
-                selections.push(d.key);
-
-                d3.select(this).attr("class", "treemap-node-selected");
-
-            } else {
-                d3.select(this).attr("class", "treemap-node");
-            }
-
-        });
-
-        _self.updateViewsTreemap(selections);
-
-
-    });
+    var marksEnter = marks.enter;
 
     function position() {
+
+        var markStyle = marksEnter.style;
+
         this.style("left", function (d) {
-                return parentPosition.left + 1 + d.x + "px";
+                return parentPosition.left + 1 + eval(markStyle.left) + "px";
             })
             .style("top", function (d) {
-                return parentPosition.top + 1 + d.y + "px";
+                return parentPosition.top + 1 + eval(markStyle.top) + "px";
             })
             .style("width", function (d) {
-                return Math.max(0, d.dx - 1) + "px";
+                return eval(markStyle.width) + "px";
             })
             .style("height", function (d) {
-                return Math.max(0, d.dy - 1) + "px";
+                return eval(markStyle.height) + "px";
             });
 
+        s.setNodes(nodes);
+
+        s.onEnd(function (left, top, width, height) {
+
+            var selections = [];
+
+            nodes.each(function (d) {
+                var nodeLeft = parentPosition.left + 1 + d.x;
+                var nodeTop = parentPosition.top + 1 + d.y;
+                var nodeWidth = Math.max(0, d.dx - 1);
+                var nodeHeight = Math.max(0, d.dy - 1);
+
+                if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+
+                    selections.push(d.key);
+                    d3.select(this).attr("class", "treemap-node-selected");
+
+
+                } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+                    nodeTop < top + height && nodeTop + nodeHeight > top) {
+
+                    selections.push(d.key);
+
+                    d3.select(this).attr("class", "treemap-node-selected");
+
+                } else {
+                    d3.select(this).attr("class", "treemap-node");
+                }
+
+            });
+
+            //_self.updateViewsTreemap(selections);
+        });
 
     }
 
-
-    var qrcode = new QRVis({
-        parentId: "treemapViz"
-    });
-    //qrcode.makeQR();
 
 };
 
 Business.prototype.getCategories = function () {
 
     var _self = this;
+
+    if (_self.allCategories && Object.keys(_self.allCategories).length > 0) {
+
+        return {
+            "key": "Categories",
+            "children": _self.allCategories
+        };
+
+    }
+    
+    
     _self.allCategories = {};
     _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
 
@@ -330,15 +350,15 @@ Business.prototype.getCategories = function () {
 
         }
 
-        if (_self.allCategories[category2]) {
-
-            _self.allCategories[category2] ++;
-
-        } else {
-
-            _self.allCategories[category2] = 1;
-
-        }
+        //        if (_self.allCategories[category2]) {
+        //
+        //            _self.allCategories[category2] ++;
+        //
+        //        } else {
+        //
+        //            _self.allCategories[category2] = 1;
+        //
+        //        }
     }
 
 

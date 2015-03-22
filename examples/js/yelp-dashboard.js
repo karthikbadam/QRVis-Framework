@@ -6,11 +6,11 @@ var files = ['data/yelp_training_set_business2.csv', 'data/yelp_training_set_rev
 
 var business;
 
-var colorScale; 
+var colorScale;
 
 $(document).ready(function () {
-    
-    colorScale = d3.scale.category20(); 
+
+    colorScale = d3.scale.category10();
 
     business = new Business();
 
@@ -52,8 +52,8 @@ $(document).ready(function () {
 
                         console.log("lat: " + d.latitude + ", long: " + d.longitude);
                     }
-                    
-                    
+
+
 
                 });
 
@@ -61,7 +61,7 @@ $(document).ready(function () {
 
                 data = null;
                 delete data;
-                
+
             });
 
         });
@@ -72,7 +72,7 @@ $(document).ready(function () {
 
 });
 
-function createVisualization(readQRContent) {
+function createVisualization(qrcontent) {
 
     if (device == "big") {
 
@@ -80,10 +80,22 @@ function createVisualization(readQRContent) {
         business.createTreemap();
         business.createCompanies();
 
-    } else if (device == "small" && readQRContent) {
-    
-       business.createGeoVisualization(readQRContent);
+    } else if (device == "small" && qrcontent) {
+
+        var _self = this;
+
+        qrcontent = qrcontent.replace(/\\"/gi, "");
+
+        var content = JSON.parse(qrcontent);
+        
+        if (content.type == "map") {
+            business.createGeoVisualization(content);
+        }
+        
+        if (content.type == "treemap") {
+
+            business.createTreemap(content);
+        }
         
     }
 }
-

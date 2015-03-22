@@ -215,8 +215,7 @@ Business.prototype.createTreemap = function () {
 
 
     /* adding dimensions */
-    qrcode.addDimensions(width, height, "div");
-
+    qrcode.addDimensions(width, height, "treemap", 0.7);
 
     var treemap = d3.layout.treemap()
         .size([width, height])
@@ -227,6 +226,7 @@ Business.prototype.createTreemap = function () {
             return a.value - b.value;
         });
 
+    qrcode.addScales("treemap", "treemap", [width, height], "d.value");
 
     var div = _self.treemap = d3.select("#vizdashboard").append("div")
         .attr("class", "treemap")
@@ -255,7 +255,35 @@ Business.prototype.createTreemap = function () {
             return d.children ? null : d.key;
         });
 
+    qrcode.addMarks("div", "categories", "big", {
+        style: {
+            left: "d.x",
+            top: "d.y",
+            width: "Math.max(0, d.dx-1)",
+            height: "Math.max(0, d.dy-1)"
+        }},
+        {},
+        {}
+    );
+
     s.setNodes(nodes);
+
+    function position() {
+        this.style("left", function (d) {
+                return parentPosition.left + 1 + d.x + "px";
+            })
+            .style("top", function (d) {
+                return parentPosition.top + 1 + d.y + "px";
+            })
+            .style("width", function (d) {
+                return Math.max(0, d.dx - 1) + "px";
+            })
+            .style("height", function (d) {
+                return Math.max(0, d.dy - 1) + "px";
+            });
+
+
+    }
 
     s.onEnd(function (left, top, width, height) {
 
@@ -292,24 +320,6 @@ Business.prototype.createTreemap = function () {
             _self.updateViewsTreemap(selections);
         }
     });
-
-    function position() {
-        this.style("left", function (d) {
-                return parentPosition.left + 1 + d.x + "px";
-            })
-            .style("top", function (d) {
-                return parentPosition.top + 1 + d.y + "px";
-            })
-            .style("width", function (d) {
-                return Math.max(0, d.dx - 1) + "px";
-            })
-            .style("height", function (d) {
-                return Math.max(0, d.dy - 1) + "px";
-            });
-
-
-    }
-
 
     qrcode.makeQR();
 
