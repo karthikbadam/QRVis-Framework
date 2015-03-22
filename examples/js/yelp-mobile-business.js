@@ -74,35 +74,54 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
     var content = JSON.parse(qrcontent);
 
+
+    var lonLeft = -112.828974;
+    var lonRight = -111.338143;
+
+    var latTop = 32.8773814;
+    var latBottom = 33.973909;
+
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
-    
-    width = 600; 
-    
+
+
     if (content.aspectRatio) {
         height = width / content.aspectRatio;
     }
 
     var projection = _self.projection;
-    var path = _self.path; 
+    var path = _self.path;
 
     var data = content.data[0];
-    if (data.attributes.projection == "albersUsa") {
 
-        projection = _self.projection = d3.geo.albers()
-            .scale([28000])
-            .rotate([108, 0, 0])
-            .translate([width/2, height/2])
-            .translate([1900, -2250]);
-        
-            //.translate([data.attributes.translateX * width, data.attributes.translateY * height]);
 
-        path = _self.path = d3.geo.path()
-            .projection(projection);
+    //if (data.attributes.projection == "albersUsa") {
 
-        _self.url = data.filename;
+    var scale = 60 * height / (latBottom - latTop);
 
-    }
+    var formatNumber = d3.format(",.0f");
+
+    projection = _self.projection = d3.geo.albersUsa()
+        .scale([scale])
+        .translate([0, 0]);
+
+    var trans = projection([lonLeft, latBottom]);
+
+    projection.translate([-1 * trans[0], -1 * trans[1]]);
+
+//    projection = _self.projection = d3.geo.albers()
+//        .scale([28000])
+//        .rotate([108, 0, 0])
+//        .translate([width / 2, height / 2])
+//        //.translate([1900, -2250]);
+//        .translate([data.attributes.translateX * width, data.attributes.translateY * height]);
+
+    path = _self.path = d3.geo.path()
+        .projection(projection);
+
+    _self.url = data.filename;
+
+    // }
 
     for (var i = 1; i < content.data.length; i++) {
         var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")

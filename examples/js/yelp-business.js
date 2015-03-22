@@ -79,23 +79,38 @@ Business.prototype.createGeoVisualization = function () {
 
     /* adding dimensions */
     qrcode.addDimensions(width, height, "map");
-
+    
+    var lonLeft = -112.828974; 
+    var lonRight = -111.338143; 
+    
+    var latTop = 32.8773814;
+    var latBottom = 33.973909;
+    
     var properties = {
         type: "geopath",
         projection: "albersUsa",
-        translateX: parseFloat(1900 / width).toFixed(2),
-        translateY: parseFloat(-2250 / height).toFixed(2),
+        translateX: parseFloat(1900 / 960).toFixed(2),
+        translateY: parseFloat(-2250 / 600).toFixed(2),
         scale: 28000
     };
 
+    var scale = 60*height/(latBottom-latTop);
 
     var formatNumber = d3.format(",.0f");
 
-    var projection = _self.projection = d3.geo.albers()
-        .scale([28000])
-        .rotate([108, 0, 0])
-        .translate([width / 2, height / 2])
-        .translate([1900, -2250]);
+//    var projection = _self.projection = d3.geo.albers()
+//        .scale([properties.scale])
+//        .rotate([108, 0, 0])
+//        .translate([width / 2, height / 2])
+//        .translate([properties.translateX * width, properties.translateY * height]);
+    
+    var projection = _self.projection = d3.geo.albersUsa()
+        .scale([scale])
+        .translate([0, 0]);
+        
+    var trans = projection([lonLeft, latBottom]);
+    
+    projection.translate([-1*trans[0], -1*trans[1]]);
 
     var path = d3.geo.path()
         .projection(projection);
