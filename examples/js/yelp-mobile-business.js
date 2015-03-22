@@ -115,11 +115,17 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
     _self.url = data.filename;
     
-    if (_self.allBusiness && _self.allBusiness.length > 0) {
+    if (_self.allBusiness.length == 0) {
         _self.allBusiness = _self.convertToArray();
     }
 
+    var selection = content.selections; 
+    
+    
     for (var i = 1; i < content.data.length; i++) {
+        
+        $("#geosvg").remove();
+        
         var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
             .attr("id", "geosvg")
             .attr("width", width)
@@ -160,6 +166,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
                 })
                 .style("fill-opacity", function (d) {
                     
+                    if (selection.indexOf(d.category1) < 0) {
+                        return 0;  
+                    }
+                
                     if (transformation == 3) {
                         var opacity = d.rating/5 * 0.2 + 0.001; 
                         return opacity;

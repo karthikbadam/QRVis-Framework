@@ -447,7 +447,7 @@ Business.prototype.updateViewsTreemap = function (selection) {
 
         })
         .style("z-index", 100)
-        .style("fill-opacity", 0.3)
+        .style("fill-opacity", 0.1)
         .style("border", "solid 1px white")
         .style("stroke-width", 0.5)
         .attr("r", function (d) {
