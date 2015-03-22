@@ -89,6 +89,7 @@ function createVisualization(qrcontent) {
         var content = JSON.parse(qrcontent);
         
         if (content.type == "map") {
+            
             business.createGeoVisualization(content);
         }
         

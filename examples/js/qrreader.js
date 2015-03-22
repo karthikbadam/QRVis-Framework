@@ -439,15 +439,13 @@ $(document).ready(function () {
 
         //show blank screen for visualization
         $('#highlightRect').remove();
-        
-        if (readQRContent != "")
-            createVisualization(readQRContent);
-
-        window.stream.stop();
-
         $('#outdiv').empty();
         $('#QRcapture').hide();
         $('#vizdashboard').show();
+        window.stream.stop();
+        
+        if (readQRContent != "")
+            createVisualization(readQRContent);
 
     });
 

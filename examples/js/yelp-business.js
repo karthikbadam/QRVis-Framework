@@ -226,7 +226,7 @@ Business.prototype.createTreemap = function () {
             return a.value - b.value;
         });
 
-    qrcode.addScales("treemap", "treemap", [width, height], "d.value");
+    qrcode.addScales("treemap", "treemap", "[width, height]", "d.value");
 
     var div = _self.treemap = d3.select("#vizdashboard").append("div")
         .attr("class", "treemap")

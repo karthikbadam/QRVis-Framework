@@ -89,7 +89,7 @@ QRVis.prototype.makeQR = function () {
     var w = 150;
     var h = 150;
 
-    var data = JSON.stringify(jsonpack.pack(_self.content));
+    var data = jsonpack.pack(_self.content);
     
     $("#QRCodesAnim-" + _self.parentId).remove();
     $("#QRCodesDiv-" + _self.parentId).remove(); 
@@ -113,4 +113,6 @@ QRVis.prototype.makeQR = function () {
         .style("position", "absolute")
         .style("left", (offsetx + parentWidth - 170)+"px")
         .style("top", (offsety + parentHeight - 170)+"px");
+    
+    $("#QRCodesDiv-" + _self.parentId).draggable(); 
 }    

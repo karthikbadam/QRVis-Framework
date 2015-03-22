@@ -210,6 +210,7 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 };
 
 Business.prototype.createTreemap = function (content) {
+
     var _self = this;
 
     var width = content.width * $(document).width(),
@@ -256,13 +257,12 @@ Business.prototype.createTreemap = function (content) {
             return d.children ? null : d.key;
         });
 
-    var marks = content.marks[0];
-
-    var marksEnter = marks.enter;
 
     function position() {
 
-        var markStyle = marksEnter.style;
+        var marks = content.marks[0];
+
+        var markStyle = marks.properties.enter.style;
 
         this.style("left", function (d) {
                 return parentPosition.left + 1 + eval(markStyle.left) + "px";
@@ -276,42 +276,43 @@ Business.prototype.createTreemap = function (content) {
             .style("height", function (d) {
                 return eval(markStyle.height) + "px";
             });
+    }
 
-        s.setNodes(nodes);
+    s.setNodes(nodes);
 
-        s.onEnd(function (left, top, width, height) {
+    s.onEnd(function (left, top, width, height) {
 
-            var selections = [];
+        var selections = [];
 
-            nodes.each(function (d) {
-                var nodeLeft = parentPosition.left + 1 + d.x;
-                var nodeTop = parentPosition.top + 1 + d.y;
-                var nodeWidth = Math.max(0, d.dx - 1);
-                var nodeHeight = Math.max(0, d.dy - 1);
+        nodes.each(function (d) {
+            var nodeLeft = parentPosition.left + 1 + d.x;
+            var nodeTop = parentPosition.top + 1 + d.y;
+            var nodeWidth = Math.max(0, d.dx - 1);
+            var nodeHeight = Math.max(0, d.dy - 1);
 
-                if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+            if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
 
-                    selections.push(d.key);
-                    d3.select(this).attr("class", "treemap-node-selected");
+                selections.push(d.key);
+                d3.select(this).attr("class", "treemap-node-selected");
 
 
-                } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
-                    nodeTop < top + height && nodeTop + nodeHeight > top) {
+            } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+                nodeTop < top + height && nodeTop + nodeHeight > top) {
 
-                    selections.push(d.key);
+                selections.push(d.key);
 
-                    d3.select(this).attr("class", "treemap-node-selected");
+                d3.select(this).attr("class", "treemap-node-selected");
 
-                } else {
-                    d3.select(this).attr("class", "treemap-node");
-                }
+            } else {
+                d3.select(this).attr("class", "treemap-node");
+            }
 
-            });
-
-            //_self.updateViewsTreemap(selections);
         });
 
-    }
+        //_self.updateViewsTreemap(selections);
+    });
+
+
 
 
 };
@@ -328,8 +329,8 @@ Business.prototype.getCategories = function () {
         };
 
     }
-    
-    
+
+
     _self.allCategories = {};
     _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
 

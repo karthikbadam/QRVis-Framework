@@ -1524,7 +1524,7 @@
                     id: "QRcode" + id
                 });
 
-                var qrText = JSON.stringify(JSON.parse(data));
+                var qrText = data;
 
                 var packets = stringSplitter(qrText);
 
