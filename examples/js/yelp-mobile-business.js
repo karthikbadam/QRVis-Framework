@@ -5,6 +5,8 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
     htmlTags = /(<[^>]*?>|<script.*?<\/script>|<style.*?<\/style>|<head.*?><\/head>)/g,
     matchTwitter = /^https?:\/\/([^\.]*\.)?twitter\.com/;
 
+var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"]; 
+
 function Business(options) {
 
     var _self = this;
@@ -73,8 +75,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
     qrcontent = qrcontent.replace(/\\"/gi, "");
 
     var content = JSON.parse(qrcontent);
-
-
+    
+    // Transformation 
+    var transformation = 3; 
+    
     var lonLeft = -112.828974;
     var lonRight = -111.338143;
 
@@ -110,6 +114,10 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
         .projection(projection);
 
     _self.url = data.filename;
+    
+    if (_self.allBusiness && _self.allBusiness.length > 0) {
+        _self.allBusiness = _self.convertToArray();
+    }
 
     for (var i = 1; i < content.data.length; i++) {
         var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
@@ -142,13 +150,33 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 
             svg.append("g")
                 .selectAll(type)
-                .data(_self.convertToArray())
+                .data(_self.allBusiness)
                 .enter()
                 .append(type)
                 .attr("class", "bubble")
                 .attr("transform", function (d) {
                     return "translate(" + eval(scale + "(" + field1 + ")") + ")";
 
+                })
+                .style("fill-opacity", function (d) {
+                    
+                    if (transformation == 3) {
+                        var opacity = d.rating/5 * 0.2 + 0.001; 
+                        return opacity;
+                    }
+                
+                    return 0.001;
+                
+                })
+                .style("fill", function (d) {
+                   
+                    if (transformation == 3) {
+                        if (topCategoryList.indexOf(d.category1) >= 0) {
+                            return colorScale(d.category1);
+                        }
+                    }
+                    
+                    return "brown";
                 })
                 .attr("r", function (d) {
                     return eval(field2);

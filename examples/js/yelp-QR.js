@@ -73,6 +73,13 @@ QRVis.prototype.addMarks = function (type, from, device, enter, update, hover) {
     });   
 }
 
+QRVis.prototype.addSelection = function (selection) {
+
+    var _self = this; 
+    _self.content.selections = selection; 
+    
+}
+
 QRVis.prototype.makeQR = function () {
 
     var _self = this;
@@ -83,6 +90,9 @@ QRVis.prototype.makeQR = function () {
     var h = 150;
 
     var data = JSON.stringify(jsonpack.pack(_self.content));
+    
+    $("#QRCodesAnim-" + _self.parentId).remove();
+    $("#QRCodesDiv-" + _self.parentId).remove(); 
     
     d3.select("#vizdashboard").append("div")
        .attr("id", "QRCodesDiv-" + _self.parentId);

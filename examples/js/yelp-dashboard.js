@@ -6,7 +6,11 @@ var files = ['data/yelp_training_set_business2.csv', 'data/yelp_training_set_rev
 
 var business;
 
+var colorScale; 
+
 $(document).ready(function () {
+    
+    colorScale = d3.scale.category20(); 
 
     business = new Business();
 

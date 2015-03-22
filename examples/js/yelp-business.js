@@ -12,6 +12,8 @@ function Business(options) {
     _self.allBusiness = [];
     _self.allBusinessObject = {};
 
+    _self.currentTreemapSelection = [];
+
 }
 
 Business.prototype.addBusiness = function (business_id, lat, lon, category1, category2, rating, name, review_count) {
@@ -70,7 +72,7 @@ Business.prototype.createGeoVisualization = function () {
 
     var _self = this;
 
-    var width = 960,
+    var width = 800,
         height = 600;
 
     var qrcode = new QRVis({
@@ -79,29 +81,29 @@ Business.prototype.createGeoVisualization = function () {
 
     /* adding dimensions */
     qrcode.addDimensions(width, height, "map");
-    
-    var lonLeft = -112.828974; 
-    var lonRight = -111.338143; 
-    
+
+    var lonLeft = -112.828974;
+    var lonRight = -111.338143;
+
     var latTop = 32.8773814;
     var latBottom = 33.973909;
-    
+
     var properties = {
         type: "geopath",
         projection: "albersUsa",
     };
 
-    var scale = 60*height/(latBottom-latTop);
+    var scale = 60 * height / (latBottom - latTop);
 
     var formatNumber = d3.format(",.0f");
 
     var projection = _self.projection = d3.geo.albersUsa()
         .scale([scale])
         .translate([0, 0]);
-        
+
     var trans = projection([lonLeft, latBottom]);
-    
-    projection.translate([-1*trans[0], -1*trans[1]]);
+
+    projection.translate([-1 * trans[0], -1 * trans[1]]);
 
     var path = d3.geo.path()
         .projection(projection);
@@ -159,6 +161,16 @@ Business.prototype.createGeoVisualization = function () {
                 return 3 + d.review_count / 30;
 
             })
+            .style("fill-opacity", function (d) {
+
+                return 0.1;
+
+            })
+            .style("fill", function (d) {
+
+                //return colorScale(d.category1);
+                return "brown";
+            })
             .append("title")
             .text(function (d) {
                 return d.name;
@@ -185,6 +197,7 @@ Business.prototype.createGeoVisualization = function () {
         qrcode.makeQR();
     });
 
+    _self.geomapQR = qrcode;
 
 
 };
@@ -192,7 +205,7 @@ Business.prototype.createGeoVisualization = function () {
 Business.prototype.createTreemap = function () {
     var _self = this;
 
-    var width = 450,
+    var width = 610,
         height = 600;
 
 
@@ -273,9 +286,11 @@ Business.prototype.createTreemap = function () {
 
         });
 
-        _self.updateViewsTreemap(selections);
 
-
+        if (selections.length > 0) {
+            _self.currentTreemapSelection = selections.slice(1);
+            _self.updateViewsTreemap(selections);
+        }
     });
 
     function position() {
@@ -297,6 +312,8 @@ Business.prototype.createTreemap = function () {
 
 
     qrcode.makeQR();
+
+    _self.treemapQR = qrcode;
 
 };
 
@@ -323,15 +340,15 @@ Business.prototype.getCategories = function () {
 
         }
 
-        if (_self.allCategories[category2]) {
-
-            _self.allCategories[category2] ++;
-
-        } else {
-
-            _self.allCategories[category2] = 1;
-
-        }
+        //        if (_self.allCategories[category2]) {
+        //
+        //            _self.allCategories[category2] ++;
+        //
+        //        } else {
+        //
+        //            _self.allCategories[category2] = 1;
+        //
+        //        }
     }
 
 
@@ -385,6 +402,7 @@ Business.prototype.updateViewsTreemap = function (selection) {
 
     _self.dataSelected = [];
     //get business object 
+
     for (var i = 0; i < _self.allBusiness.length; i++) {
         var d = _self.allBusiness[i];
 
@@ -405,6 +423,8 @@ Business.prototype.updateViewsTreemap = function (selection) {
         .text(function (d) {
             return d.name;
         });
+
+
 
     nodes.append("span")
         .attr("class", "stars")
@@ -438,6 +458,10 @@ Business.prototype.updateViewsTreemap = function (selection) {
         .text(function (d) {
             return d.name;
         });
+
+    // update QR
+    _self.geomapQR.addSelection(_self.currentTreemapSelection);
+    _self.geomapQR.makeQR();
 
 }
 
