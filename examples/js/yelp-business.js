@@ -76,7 +76,7 @@ Business.prototype.createGeoVisualization = function () {
         height = 600;
 
     var qrcode = new QRVis({
-        parentId: "geosvg"
+        parentId: "geosvgDiv"
     });
 
     /* adding dimensions */
@@ -111,9 +111,13 @@ Business.prototype.createGeoVisualization = function () {
     var radius = d3.scale.sqrt()
         .domain([0, 1e6])
         .range([0, 15]);
+    
+    d3.select("#vizdashboard").append("div")
+        .attr("id", "geosvgDiv");
 
-    var svg = _self.geosvg = d3.select("#vizdashboard").append("svg")
+    var svg = _self.geosvg = d3.select("#geosvgDiv").append("svg")
         .attr("id", "geosvg")
+        .attr("class", "geosvgClass") 
         .attr("width", width)
         .attr("height", height);
 
@@ -134,7 +138,7 @@ Business.prototype.createGeoVisualization = function () {
             .enter()
             .append("path")
             .attr("d", path)
-            .style("fill", "white")
+            .style("fill", "transparent")
             .style("stroke-width", "2")
             .style("stroke", "gray");
 
@@ -147,35 +151,45 @@ Business.prototype.createGeoVisualization = function () {
             }
         }, {}, {});
 
-        svg.append("g")
-            .selectAll("circle")
+        var circleNodes = svg
+            .selectAll("g")
             .data(_self.convertToArray())
             .enter()
-            .append("circle")
-            .attr("class", "bubble")
+            .append("g")
             .attr("transform", function (d) {
                 return "translate(" + projection([d.lon, d.lat]) + ")";
 
-            })
+            });
+
+        circleNodes.append("circle")
+            .attr("class", "bubble")
             .attr("r", function (d) {
                 return 3 + d.review_count / 30;
 
             })
-            .style("fill-opacity", function (d) {
-
-                return 0.1;
-
-            })
-            .style("fill", function (d) {
-
-                //return colorScale(d.category1);
-                return "brown";
-            })
+            .style("fill-opacity", 0.05)
+            .style("fill", "brown")
             .append("title")
             .text(function (d) {
                 return d.name;
             });
+        
 
+        circleNodes.append("text")
+            .attr("dx", function (d) {
+                return 10;
+            })
+            .attr("dy", function (d) {
+                return 10;
+            })
+            .style({"fill-opacity": 0.0001,
+                    "fill": "black",
+                    "stroke": "0px", 
+                    "pointer-events": "none", 
+                    "font-size": "10px"})
+            .text(function (d) {
+                 return d.name;
+            });
 
         // add circles 
         qrcode.addMarks("circle", {
@@ -293,17 +307,17 @@ Business.prototype.createTreemap = function () {
             var nodeWidth = Math.max(0, d.dx - 1);
             var nodeHeight = Math.max(0, d.dy - 1);
 
-            if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+            if (d.key!="Categories" && (nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
 
                 selections.push(d.key);
                 d3.select(this).attr("class", "treemap-node-selected");
 
 
-            } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+            } else if (d.key!="Categories" && nodeLeft < left + width && nodeLeft + nodeWidth > left &&
                 nodeTop < top + height && nodeTop + nodeHeight > top) {
 
                 selections.push(d.key);
-
+                
                 d3.select(this).attr("class", "treemap-node-selected");
 
             } else {
@@ -314,7 +328,7 @@ Business.prototype.createTreemap = function () {
 
 
         if (selections.length > 0) {
-            _self.currentTreemapSelection = selections.slice(1);
+            _self.currentTreemapSelection = selections;
             _self.updateViewsTreemap(selections);
         }
     });
@@ -376,7 +390,7 @@ Business.prototype.createCompanies = function () {
 
     var _self = this;
 
-    var width = 1410,
+    var width = 1430,
         height = 200;
 
 
@@ -405,11 +419,16 @@ Business.prototype.createCompanies = function () {
         }
     }, {}, {});
 
-    nodes.append("text")
+    nodes.append("p")
         .text(function (d) {
             return d.name;
+        }).style({
+            "height": "14px",
+            "text-overflow": "ellipsis",
+            "margin": "0px",
+            "overflow": "hidden"
         });
-    
+
     qrcode.addMarks("text", "", "big", {
         text: {
             text: "d.name"
@@ -434,13 +453,74 @@ Business.prototype.createCompanies = function () {
             width: "Math.max(0, (Math.min(5, d.rating))) * 16"
         }
     }, {}, {});
-    
+
     qrcode.makeQR();
 
     _self.companyQR = qrcode;
 
 };
 
+
+
+Business.prototype.getWords = function (selection) {
+
+    var _self = this;
+
+    _self.tags = {};
+
+
+    for (var i = 0; i < _self.allBusinessKeys.length; i++) {
+
+        var key = _self.allBusinessKeys[i];
+
+        if (_self.allBusinessObject[key].reviews.length < 2)
+            continue;
+
+        for (var j = 0; j < _self.allBusinessObject[key].reviews.length; j++) {
+            var review = _self.allBusinessObject[key].reviews[j];
+
+            var words = review.split(wordSeparators);
+
+            words.forEach(function (word, i) {
+                word = word.replace(punctuation, "");
+                word = word.toLowerCase();
+
+                word = word.replace(/[0-9]/g, '');
+
+                if (word.length == 0)
+                    return;
+
+
+                if (stopWords.test(word)) return;
+
+                if (word.length <= 2) return;
+
+                if (_self.tags[word]) {
+
+                    _self.tags[word] ++;
+
+                } else {
+
+                    _self.tags[word] = 1;
+
+                }
+
+            });
+        }
+    }
+
+
+    sortedTags = d3.entries(_self.tags)
+        .sort(function (a, b) {
+            return b.value - a.value;
+        });
+
+    _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
+    _self.wordMax = sortedTags[0].value;
+
+    _self.tags = d3.entries(_self.tags);
+
+}
 
 Business.prototype.updateViewsTreemap = function (selection) {
 
@@ -465,12 +545,15 @@ Business.prototype.updateViewsTreemap = function (selection) {
         .enter().append("div")
         .attr("class", "companies-node");
 
-    nodes.append("text")
+    nodes.append("p")
         .text(function (d) {
             return d.name;
+        }).style({
+            "height": "14px",
+            "text-overflow": "ellipsis",
+            "margin": "0px",
+            "overflow": "hidden"
         });
-
-
 
     nodes.append("span")
         .attr("class", "stars")
@@ -479,39 +562,33 @@ Business.prototype.updateViewsTreemap = function (selection) {
             return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
 
+        
     _self.geosvg
         .selectAll("circle")
-        .style("fill-opacity", 0.001)
-        .style("stroke-width", "0px")
-        .style("z-index", 0);
+        .style("fill-opacity", 0.001);
+    
+    _self.geosvg
+        .selectAll("text")
+        .style("fill-opacity", 0.001);
 
     _self.geosvg
         .selectAll("circle")
         .data(_self.dataSelected)
-        .attr("transform", function (d) {
-            return "translate(" + _self.projection([d.lon, d.lat]) + ")";
-
-        })
-        .style("z-index", 100)
-        .style("fill-opacity", 0.1)
-        .style("border", "solid 1px white")
-        .style("stroke-width", 0.5)
-        .attr("r", function (d) {
-            return 3 + d.review_count / 30;
-
-        })
-        .append("title")
-        .text(function (d) {
-            return d.name;
-        });
+        .style("fill-opacity", 0.3);
+    
+    
+    _self.geosvg
+        .selectAll("text")
+        .data(_self.dataSelected)
+        .style({
+            "fill-opacity": 0.001
+    });
 
     // update QR
     _self.geomapQR.addSelection(_self.currentTreemapSelection);
     _self.geomapQR.makeQR();
 
 }
-
-
 
 function selectionTool(elementId) {
     var _self = this;
@@ -580,6 +657,7 @@ function selectionTool(elementId) {
                 x = event.changedTouches[0].clientX;
                 y = event.changedTouches[0].clientY;
             } else {
+                
                 x = event.clientX;
                 y = event.clientY;
             }

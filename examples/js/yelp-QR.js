@@ -84,10 +84,10 @@ QRVis.prototype.makeQR = function () {
 
     var _self = this;
 
-    _self.numberOfFrames = 15;
+    _self.numberOfFrames = 10;
 
-    var w = 150;
-    var h = 150;
+    var w = 125;
+    var h = 125;
 
     var data = jsonpack.pack(_self.content);
     
@@ -115,4 +115,15 @@ QRVis.prototype.makeQR = function () {
         .style("top", (offsety + parentHeight - 170)+"px");
     
     $("#QRCodesDiv-" + _self.parentId).draggable(); 
+    
+    $("#QRCodesDiv-" + _self.parentId).bind('touchstart touchend', function(e) {
+        e.preventDefault();
+        $("#" + _self.parentId).toggleClass("hover_effect");
+    });
+    
+     $("#QRCodesDiv-" + _self.parentId).bind('mousedown mouseup', function(e) {
+        e.preventDefault();
+        $("#" + _self.parentId).toggleClass("hover_effect");
+    });
+   
 }    

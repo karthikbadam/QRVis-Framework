@@ -469,6 +469,11 @@ Business.prototype.getWords = function (selection) {
 
             words.forEach(function (word, i) {
                 word = word.replace(punctuation, "");
+                word = word.replace(/[0-9]/g, '');
+                
+                if (word.length == 0)
+                    return; 
+                
                 word = word.toLowerCase();
 
                 if (stopWords.test(word)) return;
@@ -498,9 +503,8 @@ Business.prototype.getWords = function (selection) {
     _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
     _self.wordMax = sortedTags[0].value;
 
-    _self.tags = d3.entried(_self.tags);
-
-
+    _self.tags = d3.entries(_self.tags);
+   
 }
 
 

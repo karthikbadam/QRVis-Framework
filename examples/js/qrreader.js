@@ -405,7 +405,7 @@ function initiate() {
         initCanvas(width, height);
         qrcode.callback = read;
 
-        MediaStreamTrack.getSources(gotSources);
+        //MediaStreamTrack.getSources(gotSources);
 
     } else {
 

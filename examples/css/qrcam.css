@@ -9,12 +9,15 @@ body {
     z-index: 2;
     background-color: rgba(150, 220, 255, 0.8);
     font-size: 16px;
+    border:1px solid black; 
+    height: 40px;
+    
 }
 
 .btn-div {
     padding: 0px;
     z-index: 2;
-
+    width: 100%;
 }
 
 #audioSource {
@@ -47,13 +50,15 @@ body {
     height: 34px;
     text-align: center;
     z-index: 2;
+    
 
 }
 
 .info-source {
     text-align: center;
     z-index: 2;
-    background-color: rgba(225, 225, 225, .8)
+    background-color: rgba(225, 225, 225, .8);
+    display:none;
 }
 
 #camera {
@@ -99,14 +104,17 @@ body {
     height: 10%;
     text-align: center;
     left: 0%;
-    top: 80%;
+    top: 90%;
     background-color: rgba(150, 220, 255, 0.8);
     z-index: 2;
     cursor: pointer;
+    font-size: 16px;
 }
 
 #progressLoader {
     position: absolute;
-    left: 20%;
-    top: 30%;
+    left: 10px;
+    top: 20px;
+    width: 100px;
+    height: 100px; 
 }

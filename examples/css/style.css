@@ -1,14 +1,127 @@
 .qrgif {
-    display:inline-block;
+    display: inline-block;
     position: absolute;
     float: right;
     padding: 20px;
 }
 
 .vega {
-    display:inline-block;
+    display: inline-block;
 }
 
 .viz {
-    padding-top: 50px; 
+    padding-top: 50px;
+}
+
+.land {
+    fill: #ddd;
+}
+
+.border {
+    fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.bubble {
+    fill: brown;
+    stroke-width: .5px;
+}
+
+.bubble:hover {
+    stroke: #000;
+    fill: brown;
+}
+
+svg {
+    border: 2px solid gray;
+}
+
+.treemap {
+    border: 2px solid gray;
+    display: inline-block;
+}
+
+div.hover_effect {
+    background-color: rgba(255, 100, 0, 0.1);
+}
+
+svg.hover_effect {
+    background-color: rgba(255, 100, 0, 0.1);
+    border: 2px solid red; 
+}
+
+#geosvgDiv{
+    width: auto;
+    display:inline-block;
+}
+
+
+.treemap-node {
+    border: solid 1px gray;
+    font: 10px Georgia, Serif;
+    line-height: 12px;
+    overflow: hidden;
+    position: absolute;
+    text-indent: 2px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.treemap-node:hover {
+    background-color: brown;
+    color: white;
+}
+
+.treemap-node-selected {
+    border: solid 1px black;
+    font: 10px Georgia, Serif;
+    line-height: 12px;
+    overflow: hidden;
+    position: absolute;
+    text-indent: 2px;
+    background-color: #efefef;
+    cursor: pointer;
+    background-color: brown;
+    color: white;
+}
+
+.companies {
+    border: 2px solid gray;
+    display: inline-block;
+    overflow: scroll;
+}
+
+.companies-node {
+    border: solid 1px black;
+    font: 10px Georgia, Serif;
+    background-color: transparent;
+    cursor: pointer;
+    width: 100px;
+    padding: 3px;
+    display: inline-block;
+    text-overflow: clip;
+    margin-right: 2px;
+}
+
+.companies-node:hover {
+    background-color: brown;
+    color: white;
+} 
+
+.companies-node:selected {
+    background-color: brown;
+    color: white;
+} 
+
+span.stars, span.stars span {
+    display: block;
+    background: url(../data/stars.png) 0 -16px repeat-x;
+    width: 80px;
+    height: 16px;
+}
+
+span.stars span {
+    background-position: 0 0;
 }
