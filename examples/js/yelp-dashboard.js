@@ -98,5 +98,10 @@ function createVisualization(qrcontent) {
             business.createTreemap(content);
         }
         
+        if (content.type == "companies") {
+
+            business.createCompanies(content);
+        }
+        
     }
 }

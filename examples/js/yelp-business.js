@@ -386,7 +386,7 @@ Business.prototype.createCompanies = function () {
 
 
     /* adding dimensions */
-    qrcode.addDimensions(width, height, "treemap", 0.7);
+    qrcode.addDimensions(width, height, "companies", 0.7);
 
     var div = _self.reviews = d3.select("#vizdashboard").append("div")
         .attr("class", "companies")

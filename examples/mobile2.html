@@ -14,7 +14,7 @@
     <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
 
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
- 
+
     <script type="text/javascript" src="js/jquery.percentageloader.min.js"></script>
 
     <script src="js/topojson.js"></script>
@@ -39,19 +39,19 @@
 
     <script src="http://d3js.org/topojson.v1.min.js"></script>
 
+
 </head>
 
 
 <body>
-    
+
     <div class="container" style="z-index: 100;">
         <div class="row">
-            <div class="col-xs-6 btn-div">
+            <div class="btn-div" class = "col-md-3">
                 <button class="btn" id="captureButton"> Capture </button>
+                 <button class="btn" id="analyzeButton"> Analyze </button>
             </div>
-            <div class="col-xs-6 btn-div">
-                <button class="btn" id="analyzeButton"> Analyze </button>
-            </div>
+            
         </div>
     </div>
 
@@ -76,7 +76,7 @@
 
         </div>
 
-        <button id="readQR">Capture</button>
+        <button id="readQR">Take Picture</button>
 
         <div id="progressLoader"> </div>
 
@@ -85,7 +85,7 @@
 
     <script type="text/javascript" src="js/jsonpack.js"></script>
     <script type="text/javascript" src="js/qrreader.js"></script>
-    
+
     <script>
         var device = "small";
     </script>
@@ -95,12 +95,12 @@
 
     </div>
 
-
     <script type="text/javascript" src="js/yelp-QR.js"></script>
 
     <script type="text/javascript" src="js/yelp-mobile-business.js"></script>
 
     <script type="text/javascript" src="js/yelp-dashboard.js"></script>
+
 
 </body>
 

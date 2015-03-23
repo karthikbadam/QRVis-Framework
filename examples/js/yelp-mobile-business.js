@@ -7,10 +7,10 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
 
 var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"];
 
-var divergingColorScale = ["rgba(202,0,32, 0.7),
+var divergingColorScale = ["rgba(202,0,32, 0.7)",
 "rgba(244, 165, 130, 0.7)",
 "rgba(247, 247, 247, 0.7)",
-"rgba(146, 197, 222, 0.7)"
+"rgba(146, 197, 222, 0.7)",
 "rgba(5, 113, 176, 0.7)",
 "rgba(10, 57, 107, 0.7)"];
 
@@ -399,33 +399,51 @@ Business.prototype.getCategories = function () {
 };
 
 
-Business.prototype.createCompanies = function () {
+Business.prototype.createCompanies = function (content) {
 
     var _self = this;
+     
+    var transform = 3; 
 
-    var width = 1410,
-        height = 200;
+    var width = content.width * $(document).width(),
+        height = content.height * $(document).height();
 
+
+    if (content.aspectRatio) {
+        height = width / content.aspectRatio;
+    }
+
+    $("#companiesDiv").remove();
+    
     var div = _self.reviews = d3.select("#vizdashboard").append("div")
         .attr("class", "companies")
+        .attr("id", "companiesDiv")
         .style("width", width + "px")
         .style("height", height + "px")
 
+    var mark = content.marks[0]; 
+    
+    
     var nodes = div.selectAll(".companies-node")
         .data(_self.convertToArray())
-        .enter().append("div")
-        .attr("class", "companies-node");
+        .enter().append(mark.type)
+        .attr("class", mark.properties.enter.style.class);
 
-    nodes.append("text")
+    mark = content.marks[1]; 
+    
+    nodes.append(mark.type)
         .text(function (d) {
-            return d.name;
+            return eval(mark.properties.enter.text.text);
         });
 
-    nodes.append("span")
-        .attr("class", "stars")
-        .append("span")
+    mark = content.marks[2];
+    var mark2 = content.marks[3];
+    
+    nodes.append(mark.type)
+        .attr("class", mark.properties.enter.style.class)
+        .append(mark2.type)
         .style("width", function (d) {
-            return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
+            return eval(mark.properties.enter.style.width) + "px";
         });
 
 };
