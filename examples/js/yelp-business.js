@@ -261,10 +261,8 @@ Business.prototype.createTreemap = function () {
             top: "d.y",
             width: "Math.max(0, d.dx-1)",
             height: "Math.max(0, d.dy-1)"
-        }},
-        {},
-        {}
-    );
+        }
+    }, {}, {});
 
     s.setNodes(nodes);
 
@@ -381,8 +379,18 @@ Business.prototype.createCompanies = function () {
     var width = 1410,
         height = 200;
 
+
+    var qrcode = new QRVis({
+        parentId: "companiesDiv"
+    });
+
+
+    /* adding dimensions */
+    qrcode.addDimensions(width, height, "treemap", 0.7);
+
     var div = _self.reviews = d3.select("#vizdashboard").append("div")
         .attr("class", "companies")
+        .attr("id", "companiesDiv")
         .style("width", width + "px")
         .style("height", height + "px")
 
@@ -391,10 +399,22 @@ Business.prototype.createCompanies = function () {
         .enter().append("div")
         .attr("class", "companies-node");
 
+    qrcode.addMarks("div", "allBusiness", "big", {
+        style: {
+            class: "companies-node"
+        }
+    }, {}, {});
+
     nodes.append("text")
         .text(function (d) {
             return d.name;
         });
+    
+    qrcode.addMarks("text", "", "big", {
+        text: {
+            text: "d.name"
+        }
+    }, {}, {});
 
     nodes.append("span")
         .attr("class", "stars")
@@ -402,6 +422,22 @@ Business.prototype.createCompanies = function () {
         .style("width", function (d) {
             return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
+
+    qrcode.addMarks("span", "", "big", {
+        style: {
+            class: "stars"
+        }
+    }, {}, {});
+
+    qrcode.addMarks("span", "", "big", {
+        style: {
+            width: "Math.max(0, (Math.min(5, d.rating))) * 16"
+        }
+    }, {}, {});
+    
+    qrcode.makeQR();
+
+    _self.companyQR = qrcode;
 
 };
 

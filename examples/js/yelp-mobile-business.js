@@ -7,6 +7,13 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
 
 var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"];
 
+var divergingColorScale = ["rgba(202,0,32, 0.7),
+"rgba(244, 165, 130, 0.7)",
+"rgba(247, 247, 247, 0.7)",
+"rgba(146, 197, 222, 0.7)"
+"rgba(5, 113, 176, 0.7)",
+"rgba(10, 57, 107, 0.7)"];
+
 function Business(options) {
 
     var _self = this;
@@ -68,13 +75,13 @@ Business.prototype.convertToArray = function () {
     return _self.allBusiness;
 }
 
-Business.prototype.createGeoVisualization = function (qrcontent) {
+Business.prototype.createGeoVisualization = function (content) {
 
     var _self = this;
 
-    qrcontent = qrcontent.replace(/\\"/gi, "");
-
-    var content = JSON.parse(qrcontent);
+    //    qrcontent = qrcontent.replace(/\\"/gi, "");
+    //
+    //    var content = JSON.parse(qrcontent);
 
     // Transformation 
     var transformation = 3;
@@ -212,6 +219,8 @@ Business.prototype.createGeoVisualization = function (qrcontent) {
 Business.prototype.createTreemap = function (content) {
 
     var _self = this;
+    
+    var transform = 3; 
 
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
@@ -232,6 +241,8 @@ Business.prototype.createTreemap = function (content) {
             return a.value - b.value;
         });
 
+    $("#treemapViz").remove();
+    $(".treemap-node").remove();
 
     var div = _self.treemap = d3.select("#vizdashboard").append("div")
         .attr("class", "treemap")
@@ -245,18 +256,26 @@ Business.prototype.createTreemap = function (content) {
     div.on("mousemove", s.move);
     div.on("mouseup", s.end);
 
-    var parentPosition = $(".treemap").offset();
+    var parentPosition = $("#treemapViz").offset();
 
     var nodes = div.datum(_self.getCategories())
         .selectAll(".treemap-node")
         .data(treemap.nodes)
         .enter().append("div")
         .attr("class", "treemap-node")
+        .style("background-color", function (d) {
+            if (transform == 3 && _self.allCategories[d.key] && _self.allCategories[d.key] > 0) {
+                return divergingColorScale[Math.floor(_self.categoryRatings[d.key]/_self.allCategories[d.key])];
+            }
+
+            return "white";
+        })
         .call(position)
         .text(function (d) {
             return d.children ? null : d.key;
         });
 
+    //_self.categoryRatings
 
     function position() {
 
@@ -332,6 +351,9 @@ Business.prototype.getCategories = function () {
 
 
     _self.allCategories = {};
+
+    _self.categoryRatings = {};
+
     _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
 
     for (var i = 0; i < _self.allBusinessKeys.length; i++) {
@@ -344,10 +366,12 @@ Business.prototype.getCategories = function () {
         if (_self.allCategories[category1]) {
 
             _self.allCategories[category1] ++;
+            _self.categoryRatings[category1] = _self.categoryRatings[category1] + _self.allBusinessObject[key].rating;
 
         } else {
 
             _self.allCategories[category1] = 1;
+            _self.categoryRatings[category1] = _self.allBusinessObject[key].rating;
 
         }
 
