@@ -219,8 +219,8 @@ Business.prototype.createGeoVisualization = function (content) {
 Business.prototype.createTreemap = function (content) {
 
     var _self = this;
-    
-    var transform = 3; 
+
+    var transform = 3;
 
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
@@ -263,13 +263,6 @@ Business.prototype.createTreemap = function (content) {
         .data(treemap.nodes)
         .enter().append("div")
         .attr("class", "treemap-node")
-        .style("background-color", function (d) {
-            if (transform == 3 && _self.allCategories[d.key] && _self.allCategories[d.key] > 0) {
-                return divergingColorScale[Math.floor(_self.categoryRatings[d.key]/_self.allCategories[d.key])];
-            }
-
-            return "white";
-        })
         .call(position)
         .text(function (d) {
             return d.children ? null : d.key;
@@ -294,6 +287,13 @@ Business.prototype.createTreemap = function (content) {
             })
             .style("height", function (d) {
                 return eval(markStyle.height) + "px";
+            })
+            .style("background-color", function (d) {
+                if (transform == 3 && _self.allCategoriesObject[d.key] && _self.allCategoriesObject[d.key] > 0) {
+                    return divergingColorScale[Math.floor(_self.categoryRatings[d.key] / _self.allCategoriesObject[d.key])];
+                }
+
+                return "white";
             });
     }
 
@@ -350,7 +350,7 @@ Business.prototype.getCategories = function () {
     }
 
 
-    _self.allCategories = {};
+    _self.allCategoriesObject = {};
 
     _self.categoryRatings = {};
 
@@ -363,14 +363,14 @@ Business.prototype.getCategories = function () {
         var category1 = _self.allBusinessObject[key].category1;
         var category2 = _self.allBusinessObject[key].category2;
 
-        if (_self.allCategories[category1]) {
+        if (_self.allCategoriesObject[category1]) {
 
-            _self.allCategories[category1] ++;
+            _self.allCategoriesObject[category1] ++;
             _self.categoryRatings[category1] = _self.categoryRatings[category1] + _self.allBusinessObject[key].rating;
 
         } else {
 
-            _self.allCategories[category1] = 1;
+            _self.allCategoriesObject[category1] = 1;
             _self.categoryRatings[category1] = _self.allBusinessObject[key].rating;
 
         }
@@ -387,7 +387,7 @@ Business.prototype.getCategories = function () {
     }
 
 
-    _self.allCategories = d3.entries(_self.allCategories).sort(function (a, b) {
+    _self.allCategories = d3.entries(_self.allCategoriesObject).sort(function (a, b) {
         return b.value - a.value;
     });;
 
@@ -402,8 +402,8 @@ Business.prototype.getCategories = function () {
 Business.prototype.createCompanies = function (content) {
 
     var _self = this;
-     
-    var transform = 3; 
+
+    var transform = 3;
 
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
@@ -414,23 +414,23 @@ Business.prototype.createCompanies = function (content) {
     }
 
     $("#companiesDiv").remove();
-    
+
     var div = _self.reviews = d3.select("#vizdashboard").append("div")
         .attr("class", "companies")
         .attr("id", "companiesDiv")
         .style("width", width + "px")
         .style("height", height + "px")
 
-    var mark = content.marks[0]; 
-    
-    
+    var mark = content.marks[0];
+
+
     var nodes = div.selectAll(".companies-node")
         .data(_self.convertToArray())
         .enter().append(mark.type)
         .attr("class", mark.properties.enter.style.class);
 
-    mark = content.marks[1]; 
-    
+    mark = content.marks[1];
+
     nodes.append(mark.type)
         .text(function (d) {
             return eval(mark.properties.enter.text.text);
@@ -438,7 +438,7 @@ Business.prototype.createCompanies = function (content) {
 
     mark = content.marks[2];
     var mark2 = content.marks[3];
-    
+
     nodes.append(mark.type)
         .attr("class", mark.properties.enter.style.class)
         .append(mark2.type)

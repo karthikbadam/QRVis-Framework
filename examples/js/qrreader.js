@@ -416,10 +416,12 @@ function initiate() {
 
 $(document).ready(function () {
 
-
+    $('#analyzeButton').hide(); 
+    
     $('#captureButton').click(function () {
 
-
+        $('#captureButton').hide();
+        $('#analyzeButton').show(); 
         //show video if not present
         if (!$('#outdiv').html()) {
             captureCanvas = true;
@@ -438,6 +440,8 @@ $(document).ready(function () {
     $('#analyzeButton').click(function () {
 
         //show blank screen for visualization
+        $('#captureButton').show();
+        $('#analyzeButton').hide(); 
         $('#highlightRect').remove();
         $('#outdiv').empty();
         $('#QRcapture').hide();
