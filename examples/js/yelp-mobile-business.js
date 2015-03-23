@@ -398,7 +398,6 @@ Business.prototype.getCategories = function () {
 
 };
 
-
 Business.prototype.createCompanies = function (content) {
 
     var _self = this;
@@ -447,6 +446,63 @@ Business.prototype.createCompanies = function (content) {
         });
 
 };
+
+
+Business.prototype.getWords = function (selection) {
+
+    var _self = this;
+
+    _self.tags = {};
+
+
+    for (var i = 0; i < _self.allBusinessKeys.length; i++) {
+
+        var key = _self.allBusinessKeys[i];
+
+        if (_self.allBusinessObject[key].reviews.length < 2)
+            continue;
+
+        for (var j = 0; j < _self.allBusinessObject[key].reviews.length; j++) {
+            var review = _self.allBusinessObject[key].reviews[j];
+
+            var words = review.split(wordSeparators);
+
+            words.forEach(function (word, i) {
+                word = word.replace(punctuation, "");
+                word = word.toLowerCase();
+
+                if (stopWords.test(word)) return;
+
+                if (word.length <= 2) return;
+
+                if (_self.tags[word]) {
+
+                    _self.tags[word] ++;
+
+                } else {
+
+                    _self.tags[word] = 1;
+
+                }
+
+            });
+        }
+    }
+
+
+    sortedTags = d3.entries(_self.tags)
+        .sort(function (a, b) {
+            return b.value - a.value;
+        });
+
+    _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
+    _self.wordMax = sortedTags[0].value;
+
+    _self.tags = d3.entried(_self.tags);
+
+
+}
+
 
 
 Business.prototype.updateViewsTreemap = function (selection) {
