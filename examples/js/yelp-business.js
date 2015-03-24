@@ -109,10 +109,6 @@ Business.prototype.createGeoVisualization = function () {
     var path = d3.geo.path()
         .projection(projection);
 
-    var radius = d3.scale.sqrt()
-        .domain([0, 1e6])
-        .range([0, 15]);
-
     d3.select("#vizdashboard").append("div")
         .attr("id", "geosvgDiv");
 
@@ -190,7 +186,7 @@ Business.prototype.createGeoVisualization = function () {
                 "fill": "black",
                 "stroke": "0px",
                 "pointer-events": "none",
-                "font-size": "10px"
+                "font-size": "12px"
             })
             .text(function (d) {
                 return d.name;
@@ -614,13 +610,16 @@ Business.prototype.updateViewsCompany = function (selection) {
         });
 
     circleNodes.select("circle")
-        .style("fill-opacity", 0.3);
+        .style("fill-opacity", 0.8);
 
     circleNodes.select("text")
-        .style("fill-opacity", 0.9);
+        .style("fill-opacity", 0.6);
 
-    circleNodes.exit().transition().duration(500)
-        .remove();
+    circleNodes.exit().select("circle").transition().duration(500)
+        .style("fill-opacity", 0.1);
+    
+    circleNodes.exit().select("text").transition().duration(500)
+        .style("fill-opacity", 0.001);
 
     var circleNodes2 = circleNodes
         .enter()
@@ -636,7 +635,7 @@ Business.prototype.updateViewsCompany = function (selection) {
             return 3 + d.review_count / 30;
 
         })
-        .style("fill-opacity", 0.3)
+        .style("fill-opacity", 0.8)
         .style("fill", "brown")
         .append("title")
         .text(function (d) {
@@ -652,11 +651,11 @@ Business.prototype.updateViewsCompany = function (selection) {
             return 5;
         })
         .style({
-            "fill-opacity": 0.8,
+            "fill-opacity": 0.6,
             "fill": "black",
             "stroke": "0px",
             "pointer-events": "none",
-            "font-size": "10px"
+            "font-size": "12px"
         })
         .text(function (d) {
             return d.name;
@@ -753,11 +752,11 @@ Business.prototype.updateViewsTreemap = function (selection) {
             return 5;
         })
         .style({
-            "fill-opacity": 0.05,
+            "fill-opacity": 0.001,
             "fill": "black",
             "stroke": "0px",
             "pointer-events": "none",
-            "font-size": "10px"
+            "font-size": "12px"
         })
         .text(function (d) {
             return d.name;

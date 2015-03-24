@@ -55,6 +55,10 @@ svg.hover_effect {
 #geosvgDiv{
     width: auto;
     display:inline-block;
+    background-image: url("../images/gmap1.png");
+    background-repeat: no-repeat;
+    background-size: auto;
+   
 }
 
 
@@ -110,7 +114,15 @@ svg.hover_effect {
     color: white;
 } 
 
-.companies-node:selected {
+.companies-node-selected {
+    border: solid 1px black;
+    font: 10px Georgia, Serif;
+    cursor: pointer;
+    width: 100px;
+    padding: 3px;
+    display: inline-block;
+    text-overflow: clip;
+    margin-right: 2px;
     background-color: brown;
     color: white;
 } 
