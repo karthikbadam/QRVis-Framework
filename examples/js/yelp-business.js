@@ -33,14 +33,15 @@ Business.prototype.addBusiness = function (business_id, lat, lon, category1, cat
     business.review_count = review_count;
 
     //_self.allBusiness.push(business);
-    _self.allBusinessObject[business_id] = business;
+    if (business_id != "#NAME?")
+        _self.allBusinessObject[business_id] = business;
 }
 
 Business.prototype.addReview = function (business_id, text, stars) {
 
     var _self = this;
 
-    if (business_id && _self.allBusinessObject[business_id]) {
+    if (business_id && business_id != "#NAME?" && _self.allBusinessObject[business_id]) {
         _self.allBusinessObject[business_id].reviews.push(text);
         _self.allBusinessObject[business_id].stars.push(stars);
     }
@@ -111,13 +112,13 @@ Business.prototype.createGeoVisualization = function () {
     var radius = d3.scale.sqrt()
         .domain([0, 1e6])
         .range([0, 15]);
-    
+
     d3.select("#vizdashboard").append("div")
         .attr("id", "geosvgDiv");
 
     var svg = _self.geosvg = d3.select("#geosvgDiv").append("svg")
         .attr("id", "geosvg")
-        .attr("class", "geosvgClass") 
+        .attr("class", "geosvgClass")
         .attr("width", width)
         .attr("height", height);
 
@@ -173,7 +174,7 @@ Business.prototype.createGeoVisualization = function () {
             .text(function (d) {
                 return d.name;
             });
-        
+
 
         circleNodes.append("text")
             .attr("dx", function (d) {
@@ -182,13 +183,15 @@ Business.prototype.createGeoVisualization = function () {
             .attr("dy", function (d) {
                 return 10;
             })
-            .style({"fill-opacity": 0.0001,
-                    "fill": "black",
-                    "stroke": "0px", 
-                    "pointer-events": "none", 
-                    "font-size": "10px"})
+            .style({
+                "fill-opacity": 0.0001,
+                "fill": "black",
+                "stroke": "0px",
+                "pointer-events": "none",
+                "font-size": "10px"
+            })
             .text(function (d) {
-                 return d.name;
+                return d.name;
             });
 
         // add circles 
@@ -278,7 +281,7 @@ Business.prototype.createTreemap = function () {
         }
     }, {}, {});
 
-    s.setNodes(nodes);
+    //s.setNodes(nodes);
 
     function position() {
         this.style("left", function (d) {
@@ -307,17 +310,17 @@ Business.prototype.createTreemap = function () {
             var nodeWidth = Math.max(0, d.dx - 1);
             var nodeHeight = Math.max(0, d.dy - 1);
 
-            if (d.key!="Categories" && (nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+            if (d.key != "Categories" && (nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
 
                 selections.push(d.key);
                 d3.select(this).attr("class", "treemap-node-selected");
 
 
-            } else if (d.key!="Categories" && nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+            } else if (d.key != "Categories" && nodeLeft < left + width && nodeLeft + nodeWidth > left &&
                 nodeTop < top + height && nodeTop + nodeHeight > top) {
 
                 selections.push(d.key);
-                
+
                 d3.select(this).attr("class", "treemap-node-selected");
 
             } else {
@@ -408,9 +411,19 @@ Business.prototype.createCompanies = function () {
         .style("width", width + "px")
         .style("height", height + "px")
 
+    var s = new selectionTool("companiesDiv");
+    div.on("mousedown", s.start);
+    div.on("mousemove", s.move);
+    div.on("mouseup", s.end);
+
+
+
     var nodes = div.selectAll(".companies-node")
         .data(_self.convertToArray())
         .enter().append("div")
+        .attr("id", function (d) {
+            return "div-" + d.business_id;
+        })
         .attr("class", "companies-node");
 
     qrcode.addMarks("div", "allBusiness", "big", {
@@ -453,6 +466,59 @@ Business.prototype.createCompanies = function () {
             width: "Math.max(0, (Math.min(5, d.rating))) * 16"
         }
     }, {}, {});
+
+    s.onEnd(function (left, top, width, height) {
+
+        var selections = [];
+
+        nodes.each(function (d) {
+
+            if (!document.getElementById("div-" + d.business_id))
+                return;
+
+            var position = $("#div-" + d.business_id).offset();
+
+            var nodeLeft = position.left;
+            var nodeTop = position.top;
+            var nodeWidth = $("#div-" + d.business_id).width();
+            var nodeHeight = $("#div-" + d.business_id).height();
+
+            if ((nodeLeft > left && nodeTop > top) && (nodeLeft + nodeWidth < left + width && nodeTop + nodeHeight < top + height)) {
+
+                selections.push(d.business_id);
+                d3.select("#div-" + d.business_id).style({
+                    "background-color": "brown",
+                    "color": "white"
+                });
+
+
+            } else if (nodeLeft < left + width && nodeLeft + nodeWidth > left &&
+                nodeTop < top + height && nodeTop + nodeHeight > top) {
+
+                selections.push(d.business_id);
+
+                d3.select("#div-" + d.business_id).style({
+                    "background-color": "brown",
+                    "color": "white"
+                });
+
+            } else {
+                d3.select("#div-" + d.business_id).style({
+                    "background-color": "transparent",
+                    "color": "black"
+                });
+            }
+
+        });
+
+
+        if (selections.length > 0) {
+            _self.currentCompanySelection = selections;
+            _self.updateViewsCompany(selections);
+        }
+    });
+
+
 
     qrcode.makeQR();
 
@@ -522,6 +588,42 @@ Business.prototype.getWords = function (selection) {
 
 }
 
+Business.prototype.updateViewsCompany = function (selection) {
+    
+    var _self = this; 
+    
+    _self.dataSelected = []; 
+    
+    for (var i = 0; i < selection.length; i++) {
+        _self.dataSelected.push(_self.allBusinessObject[selection[i]]);
+    }
+    
+     _self.geosvg
+        .selectAll("circle")
+        .style("fill-opacity", 0.001);
+    
+    _self.geosvg
+        .selectAll("text")
+        .style({
+            "fill-opacity": 0.001
+        });
+    
+    
+    _self.geosvg
+        .selectAll("circle")
+        .data(_self.dataSelected)
+        .style("fill-opacity", 0.9);
+
+    
+    _self.geosvg
+        .selectAll("text")
+        .data(_self.dataSelected)
+        .style({
+            "fill-opacity": 0.9
+        });
+
+}
+
 Business.prototype.updateViewsTreemap = function (selection) {
 
     var _self = this;
@@ -543,6 +645,9 @@ Business.prototype.updateViewsTreemap = function (selection) {
     var nodes = _self.reviews.selectAll(".companies-node")
         .data(_self.dataSelected)
         .enter().append("div")
+        .attr("id", function (d) {
+            return "div-" + d.business_id;
+        })
         .attr("class", "companies-node");
 
     nodes.append("p")
@@ -562,11 +667,11 @@ Business.prototype.updateViewsTreemap = function (selection) {
             return (Math.max(0, (Math.min(5, d.rating))) * 16) + "px";
         });
 
-        
+
     _self.geosvg
         .selectAll("circle")
         .style("fill-opacity", 0.001);
-    
+
     _self.geosvg
         .selectAll("text")
         .style("fill-opacity", 0.001);
@@ -575,14 +680,14 @@ Business.prototype.updateViewsTreemap = function (selection) {
         .selectAll("circle")
         .data(_self.dataSelected)
         .style("fill-opacity", 0.3);
-    
-    
+
+
     _self.geosvg
         .selectAll("text")
         .data(_self.dataSelected)
         .style({
             "fill-opacity": 0.001
-    });
+        });
 
     // update QR
     _self.geomapQR.addSelection(_self.currentTreemapSelection);
@@ -595,12 +700,6 @@ function selectionTool(elementId) {
     var offset = $("#" + elementId).offset();
     var offsetx = offset.left;
     var offsety = offset.top;
-
-    this.setNodes = function (nodes) {
-
-        _self.nodes = nodes;
-
-    };
 
     this.start = function () {
 
@@ -657,7 +756,7 @@ function selectionTool(elementId) {
                 x = event.changedTouches[0].clientX;
                 y = event.changedTouches[0].clientY;
             } else {
-                
+
                 x = event.clientX;
                 y = event.clientY;
             }
