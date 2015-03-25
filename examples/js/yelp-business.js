@@ -414,8 +414,6 @@ Business.prototype.createCompanies = function () {
     div.on("mousemove", s.move);
     div.on("mouseup", s.end);
 
-
-
     var nodes = div.selectAll("div")
         .data(_self.convertToArray(), function (d) {
             return d.business_id;
@@ -526,8 +524,6 @@ Business.prototype.createCompanies = function () {
 
 };
 
-
-
 Business.prototype.getWords = function (selection) {
 
     var _self = this;
@@ -576,23 +572,18 @@ Business.prototype.getWords = function (selection) {
     }
 
 
-    sortedTags = d3.entries(_self.tags)
+    _self.tags = d3.entries(_self.tags);
+
+    if (_self.tags.length > 200)
+        _self.tags = _self.tags.slice(0, 200);
+
+    sortedTags = _self.tags
         .sort(function (a, b) {
             return b.value - a.value;
         });
-    
-   
 
     _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
     _self.wordMax = sortedTags[0].value;
-
-    _self.tags = d3.entries(_self.tags);
-    
-    _self.tags.filter(function (d) {
-        
-        return (d.value > 15);
-    
-    });
 
 }
 
@@ -605,8 +596,8 @@ Business.prototype.updateViewsCompany = function (selection) {
     for (var i = 0; i < selection.length; i++) {
         _self.dataSelected.push(_self.allBusinessObject[selection[i]]);
     }
-    
-    
+
+
     _self.dataSelected.sort(function (a, b) {
         return b.rating - a.rating;
     });
@@ -625,7 +616,7 @@ Business.prototype.updateViewsCompany = function (selection) {
 
     circleNodes.exit().select("circle").transition().duration(500)
         .style("fill-opacity", 0.1);
-    
+
     circleNodes.exit().select("text").transition().duration(500)
         .style("fill-opacity", 0.001);
 
@@ -681,7 +672,7 @@ Business.prototype.updateViewsTreemap = function (selection) {
     for (var i = 0; i < _self.allBusiness.length; i++) {
         var d = _self.allBusiness[i];
 
-        if (selection.indexOf(d.category1) >= 0){
+        if (selection.indexOf(d.category1) >= 0) {
             //|| selection.indexOf(d.category2) >= 0) {
             _self.dataSelected.push(d);
         }
@@ -691,9 +682,9 @@ Business.prototype.updateViewsTreemap = function (selection) {
         .data(_self.dataSelected, function (d) {
             return d.business_id;
         });
-    
+
     nodes.exit().remove();
-    
+
     var nodes2 = nodes.enter().append("div")
         .attr("id", function (d) {
             return "div-" + d.business_id;
@@ -725,8 +716,8 @@ Business.prototype.updateViewsTreemap = function (selection) {
 
     circleNodes.select("circle")
         .style("fill-opacity", 0.3);
-    
-    
+
+
     circleNodes.exit().transition().duration(500)
         .remove();
 

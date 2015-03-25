@@ -5,6 +5,8 @@ var stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourse
     htmlTags = /(<[^>]*?>|<script.*?<\/script>|<style.*?<\/style>|<head.*?><\/head>)/g,
     matchTwitter = /^https?:\/\/([^\.]*\.)?twitter\.com/;
 
+var fontSize;
+
 var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"];
 
 var divergingColorScale = ["rgba(202,0,32, 0.7)",
@@ -404,13 +406,13 @@ Business.prototype.createCompanies = function (content) {
 
     var transform = 3;
 
-    var width = content.width * $(document).width(),
-        height = content.height * $(document).height();
+    var width = $(document).width(),
+        height = 0.8 * $(document).height();
 
 
-    if (content.aspectRatio) {
-        height = width / content.aspectRatio;
-    }
+    //    if (content.aspectRatio) {
+    //        height = width / content.aspectRatio;
+    //    }
 
     $("#companiesDiv").remove();
 
@@ -420,32 +422,102 @@ Business.prototype.createCompanies = function (content) {
         .style("width", width + "px")
         .style("height", height + "px")
 
-    var mark = content.marks[0];
+    if (transform == 1) {
+
+        var mark = content.marks[0];
+
+        var nodes = div.selectAll(".companies-node")
+            .data(_self.convertToArray())
+            .enter().append(mark.type)
+            .attr("class", mark.properties.enter.style.class);
+
+        mark = content.marks[1];
+
+        nodes.append(mark.type)
+            .text(function (d) {
+                return eval(mark.properties.enter.text.text);
+            });
+
+        mark = content.marks[2];
+        var mark2 = content.marks[3];
+
+        nodes.append(mark.type)
+            .attr("class", mark.properties.enter.style.class)
+            .append(mark2.type)
+            .style("width", function (d) {
+                return eval(mark.properties.enter.style.width) + "px";
+            });
+
+    } else if (transform == 3) {
 
 
-    var nodes = div.selectAll(".companies-node")
-        .data(_self.convertToArray())
-        .enter().append(mark.type)
-        .attr("class", mark.properties.enter.style.class);
+        function draw(data, bounds) {
 
-    mark = content.marks[1];
+            var scale = bounds ? Math.min(
+                width / Math.abs(bounds[1].x - width / 2),
+                width / Math.abs(bounds[0].x - width / 2),
+                height / Math.abs(bounds[1].y - height / 2),
+                height / Math.abs(bounds[0].y - height / 2)) / 2 : 1;
 
-    nodes.append(mark.type)
-        .text(function (d) {
-            return eval(mark.properties.enter.text.text);
-        });
+            words = data;
 
-    mark = content.marks[2];
-    var mark2 = content.marks[3];
+            var vis = _self.wordsvg.append("g")
+                .attr("transform", "translate(" + [width >> 1, height >> 1] + ")");
 
-    nodes.append(mark.type)
-        .attr("class", mark.properties.enter.style.class)
-        .append(mark2.type)
-        .style("width", function (d) {
-            return eval(mark.properties.enter.style.width) + "px";
-        });
+            var text = vis.selectAll("text")
+                .data(words, function (d) {
+                    return d.text.toLowerCase();
+                });
 
+            text.enter().append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", function (d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .style("font-size", "1px")
+                .style("font-size", function (d) {
+                    return d.size + "px";
+                });
+
+            text.style("fill", function (d) {
+                    return "#666";
+                    //fill(d.text.toLowerCase());
+                })
+                .text(function (d) {
+                    return d.text;
+                });
+
+            vis
+                .attr("transform", "translate(" + [width >> 1, height >> 1] + ")scale(" + scale + ")");
+        }
+
+        var layout = d3.layout.cloud()
+            .size([width, height])
+            .fontSize(function (d) {
+                return fontSize(+d.value)
+            })
+            .text(function (d) {
+                return d.key;
+            })
+            .on("end", draw);
+
+        var svg = _self.wordsvg = _self.reviews.append("svg")
+            .attr("id", "wordCloudViz")
+            .attr("width", width)
+            .attr("height", height);
+
+        _self.getWords();
+
+        fontSize = d3.scale.log().range([7, 50]);
+
+        fontSize.domain([_self.wordMin, _self.wordMax]);
+
+        layout.stop().words(_self.tags).start();
+
+
+    }
 };
+
 
 
 
@@ -455,6 +527,7 @@ Business.prototype.getWords = function (selection) {
 
     _self.tags = {};
 
+    _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
 
     for (var i = 0; i < _self.allBusinessKeys.length; i++) {
 
@@ -497,27 +570,22 @@ Business.prototype.getWords = function (selection) {
     }
 
 
-    sortedTags = d3.entries(_self.tags)
+
+    _self.tags = d3.entries(_self.tags);
+
+    if (_self.tags.length > 200)
+        _self.tags = _self.tags.slice(0, 200);
+
+    sortedTags = _self.tags
         .sort(function (a, b) {
             return b.value - a.value;
         });
-    
-   
 
     _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
     _self.wordMax = sortedTags[0].value;
 
-    _self.tags = d3.entries(_self.tags);
-    
-    _self.tags.filter(function (d) {
-        
-        return (d.value > 15);
-    
-    });
 
 }
-
-
 
 Business.prototype.updateViewsTreemap = function (selection) {
 
@@ -580,8 +648,6 @@ Business.prototype.updateViewsTreemap = function (selection) {
         });
 
 }
-
-
 
 function selectionTool(elementId) {
     var _self = this;
@@ -741,5 +807,3 @@ function selectionTool(elementId) {
     };
 
 }
-
-
