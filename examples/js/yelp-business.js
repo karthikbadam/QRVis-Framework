@@ -580,11 +580,19 @@ Business.prototype.getWords = function (selection) {
         .sort(function (a, b) {
             return b.value - a.value;
         });
+    
+   
 
     _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
     _self.wordMax = sortedTags[0].value;
 
     _self.tags = d3.entries(_self.tags);
+    
+    _self.tags.filter(function (d) {
+        
+        return (d.value > 15);
+    
+    });
 
 }
 

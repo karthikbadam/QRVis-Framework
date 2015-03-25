@@ -448,6 +448,7 @@ Business.prototype.createCompanies = function (content) {
 };
 
 
+
 Business.prototype.getWords = function (selection) {
 
     var _self = this;
@@ -469,12 +470,13 @@ Business.prototype.getWords = function (selection) {
 
             words.forEach(function (word, i) {
                 word = word.replace(punctuation, "");
-                word = word.replace(/[0-9]/g, '');
-                
-                if (word.length == 0)
-                    return; 
-                
                 word = word.toLowerCase();
+
+                word = word.replace(/[0-9]/g, '');
+
+                if (word.length == 0)
+                    return;
+
 
                 if (stopWords.test(word)) return;
 
@@ -499,12 +501,20 @@ Business.prototype.getWords = function (selection) {
         .sort(function (a, b) {
             return b.value - a.value;
         });
+    
+   
 
     _self.wordMin = sortedTags[sortedTags.length - 1].value || 1;
     _self.wordMax = sortedTags[0].value;
 
     _self.tags = d3.entries(_self.tags);
-   
+    
+    _self.tags.filter(function (d) {
+        
+        return (d.value > 15);
+    
+    });
+
 }
 
 
@@ -731,3 +741,5 @@ function selectionTool(elementId) {
     };
 
 }
+
+
