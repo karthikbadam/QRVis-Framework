@@ -527,6 +527,8 @@ Business.prototype.getWords = function (selection) {
 
     _self.tags = {};
 
+    
+    //get keys!
     _self.allBusinessKeys = Object.keys(_self.allBusinessObject);
 
     for (var i = 0; i < _self.allBusinessKeys.length; i++) {
