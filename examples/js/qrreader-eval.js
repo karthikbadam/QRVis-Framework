@@ -17,14 +17,14 @@ var start;
 
 var videoSelect = document.querySelector('select#videoSource');
 
-var msg = null;
+var msg = [];
 var vidhtml = '<video id="v" autoplay></video>';
 var allLoaded = false;
 var counter = 0;
 var loader;
 
-var CAPTURE_DELAY = 145;
-var DECODE_DELAY = 45;
+var CAPTURE_DELAY = 85;
+var DECODE_DELAY = 80;
 
 
 function gotSources(sourceInfos) {
@@ -74,11 +74,11 @@ function initCanvas(w, h) {
 
     $('body').append('<div id="highlightRect" style="background-color: rgba(255, 170, 170, 0.2); border: solid 1px #222; position: absolute; z-index: 100;"></div>');
 
-    $('#highlightRect').width(400);
-    $('#highlightRect').height(400);
+    $('#highlightRect').width($(document).width()*0.65);
+    $('#highlightRect').height($(document).width()*0.65);
     $('#highlightRect').offset({
-        left: 400,
-        top: 200
+        left: $(document).width()/4,
+        top: $(document).height()/4
     });
 
     $('#readQR').click(function () {
@@ -101,6 +101,9 @@ function decodeQR() {
 
     } catch (e) {
         console.log(e.stack);
+        console.log(e.message);
+        console.log(e.name);
+        console.log(e);
     };
 
     if (!allLoaded) {
@@ -233,7 +236,7 @@ function captureToCanvas() {
 
 function read(a) {
 
-    console.log("read frame");
+    console.log("read frame "+ a);
 
     captureCanvas = true;
 
@@ -241,62 +244,64 @@ function read(a) {
 
     var total = message.t;
 
-    if (msg == null) {
+    if (msg.length == 0) {
 
-        //loader = $("#progressLoader").percentageLoader({
+        loader = $("#progressLoader").percentageLoader({
         width: 50,
         height: 50
-    });
+          });
+        for (var i = 0; i < total; i++) {
+            msg.push({});
+            msg[i].s = "";
+            msg[i].filled = false;
+        }
 
-msg = [];
-for (var i = 0; i < total; i++) {
-    msg.push({});
-    msg[i].s = "";
-    msg[i].filled = false;
-}
-
-}
-
-if (!msg[message.l - 1].filled) {
-    msg[message.l - 1].s = message.s;
-    msg[message.l - 1].filled = true;
-}
-
-var check = true;
-counter = 0;
-for (var i = 0; i < total; i++) {
-    if (!msg[i].filled)
-        check = false;
-    else
-        counter++;
-}
-
-//loader.setProgress(counter / total);
-
-if (check) {
-    allLoaded = true;
-    captureCanvas = false;
-    var messagePassed = "";
-    for (var i = 0; i < total; i++) {
-        messagePassed = messagePassed + msg[i].s;
     }
 
-    var message = JSON.stringify(jsonpack.unpack(messagePassed));
-
-    console.log(message);
-
-    //alert(message);
-
-    var end = new Date().getTime();
-    var time = end - start;
-    alert('Execution time:' + time);
-    console.log('Execution time:' + time);
+    if (!msg[message.l - 1].filled) {
+        msg[message.l - 1].i = message.l;
+        msg[message.l - 1].s = "got you";
+        msg[message.l - 1].filled = true;
     
-    readQRContent = message;
 
-    //$("#progressLoader").empty();
+    var check = true;
+    counter = 0;
+    for (var i = 0; i < total; i++) {
+        if (!msg[i].filled)
+            check = false;
+        else
+            counter++;
+    }
+    
+    console.log((counter / total) + JSON.stringify(msg));
+    
+    loader.setProgress(counter / total);
 
-}
+    if (check) {
+        allLoaded = true;
+        captureCanvas = false;
+        var messagePassed = "";
+        for (var i = 0; i < total; i++) {
+            messagePassed = messagePassed + msg[i].s;
+        }
+
+        //var message = JSON.stringify(jsonpack.unpack(messagePassed));
+
+        console.log(messagePassed);
+
+        //alert(message);
+
+        var end = new Date().getTime();
+        var time = end - start;
+        alert('Execution time:' + time);
+        console.log('Execution time:' + time);
+
+        readQRContent = message;
+
+        $("#progressLoader").empty();
+
+    }
+    }
 }
 
 function isCanvasSupported() {
@@ -424,7 +429,7 @@ function initiate() {
 
         initCanvas(width, height);
         qrcode.callback = read;
-        //MediaStreamTrack.getSources(gotSources);
+        MediaStreamTrack.getSources(gotSources);
     } else {
 
         console.log("failed initiation");
@@ -434,52 +439,13 @@ function initiate() {
 
 $(document).ready(function () {
 
-    $('#analyzeButton').hide();
-
     captureCanvas = true;
     $('#QRcapture').show();
-    $('#vizdashboard').hide();
     allLoaded = false;
     counter = 0;
     captureCanvas = true;
-    msg = null;
+    msg = [];
     readQRContent = "";
     initiate();
-
-
-    $('#captureButton').click(function () {
-
-        $('#captureButton').hide();
-        $('#analyzeButton').show();
-        //show video if not present
-        if (!$('#outdiv').html()) {
-            captureCanvas = true;
-            $('#QRcapture').show();
-            $('#vizdashboard').hide();
-            allLoaded = false;
-            counter = 0;
-            captureCanvas = true;
-            msg = null;
-            readQRContent = "";
-            initiate();
-        }
-
-    });
-
-    $('#analyzeButton').click(function () {
-
-        //show blank screen for visualization
-        $('#captureButton').show();
-        $('#analyzeButton').hide();
-        $('#highlightRect').remove();
-        $('#outdiv').empty();
-        $('#QRcapture').hide();
-        $('#vizdashboard').show();
-        window.stream.stop();
-
-        if (readQRContent != "")
-            createVisualization(readQRContent);
-
-    });
 
 })

@@ -50,15 +50,13 @@ body {
     height: 34px;
     text-align: center;
     z-index: 2;
-    
-
 }
 
 .info-source {
     text-align: center;
     z-index: 2;
     background-color: rgba(225, 225, 225, .8);
-    display:none;
+/*    display:none;*/
 }
 
 #camera {

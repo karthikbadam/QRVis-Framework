@@ -73,8 +73,11 @@ Business.prototype.createGeoVisualization = function () {
 
     var _self = this;
 
-    var width = 800,
-        height = 600;
+    var deviceWidth = $(document).width();
+    var deviceHeight = $(document).height();
+    
+    var width = 0.6*deviceWidth,
+        height = 0.8*deviceHeight;
 
     var qrcode = new QRVis({
         parentId: "geosvgDiv"
@@ -220,8 +223,14 @@ Business.prototype.createGeoVisualization = function () {
 Business.prototype.createTreemap = function () {
     var _self = this;
 
-    var width = 610,
-        height = 600;
+    var deviceWidth = $(document).width();
+    var deviceHeight = $(document).height();
+    
+    var width = 0.35*deviceWidth,
+        height = 0.8*deviceHeight;
+    
+    //var width = 610,
+      //  height = 600;
 
 
     var qrcode = new QRVis({
@@ -390,9 +399,15 @@ Business.prototype.getCategories = function () {
 Business.prototype.createCompanies = function () {
 
     var _self = this;
+    
+    var deviceWidth = $(document).width();
+    var deviceHeight = $(document).height();
+    
+    var width = 0.94*deviceWidth,
+        height = 0.2*deviceHeight;
 
-    var width = 1430,
-        height = 200;
+//    var width = 1430,
+  //      height = 200;
 
 
     var qrcode = new QRVis({

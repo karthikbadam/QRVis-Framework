@@ -1325,7 +1325,7 @@
             function _getTypeNumber(sText, nCorrectLevel) {
                 var nType = 1;
                 var length = _getUTF8Length(sText);
-
+                console.log("Length is"+ length)
                 for (var i = 0, len = QRCodeLimitLength.length; i <= len; i++) {
                     var nLimit = 0;
 
@@ -1473,7 +1473,7 @@
 
 
             //takes input ID and number of frames in QR code
-            var generator = function (id, parentID, n, data, w, h) {
+            var generator = function (id, parentID, n, data, w, h, QR_DELAY) {
 
 
                 //split a string
@@ -1521,7 +1521,8 @@
                 qrcode = new QRCode(document.getElementById("animCanvas"), {
                     width: w,
                     height: h,
-                    id: "QRcode" + id
+                    id: "QRcode" + id,
+                    correctLevel : QRCode.CorrectLevel.L
                 });
 
                 var qrText = data;
@@ -1539,9 +1540,11 @@
 
                     qrcode.makeCode(JSON.stringify(d));
 
+                    var QRdelay = QR_DELAY?QR_DELAY:150; 
+                    
                     gif.addFrame(qrelement, {
                         "copy": true,
-                        "delay": 150
+                        "delay": QRdelay
                     });
                     console.log(packets[i]);
                 }
@@ -3518,9 +3521,12 @@
                 var clipperWidth = $('#highlightRect').width();
                 var clipperHeight = $('#highlightRect').height();
                 //console.log('trying to read QR');
-
-                var image = context.getImageData(offset.left, offset.top, clipperWidth, clipperHeight);
-
+                    
+                qrcode.width = clipperWidth;
+                qrcode.height = clipperHeight;
+                
+                var im = context.getImageData(offset.left, offset.top, clipperWidth-1, clipperHeight-1);
+            
                 var canvas_qr2 = document.createElement('canvas');
                 var context2 = canvas_qr2.getContext('2d');
                 var nwidth = clipperWidth;
@@ -3528,24 +3534,23 @@
                 canvas_qr2.width = nwidth;
                 canvas_qr2.height = nheight;
 
-                context2.putImageData(image, 0, 0);
+                context2.putImageData(im, 0, 0);
 
                 qrcode.width = canvas_qr2.width;
                 qrcode.height = canvas_qr2.height;
 
                 qrcode.imagedata = context2.getImageData(0, 0, canvas_qr2.width, canvas_qr2.height);
-
-                //$('#highlightRect').remove();
-
-                //qrcode.imagedata = context.getImageData(offset.left, offset.top, qrcode.width + 40, qrcode.height + 40);
-                //qrcode.imagedata = context.getImageData(0, 0, qrcode.width, qrcode.height);
-
-                qrcode.result = qrcode.process(context2);
-                if (qrcode.callback != null)
+               
+                //context.putImageData(qrcode.imagedata, 0, 0);
+                
+                qrcode.result = qrcode.process();
+                if (qrcode.callback != null) {
+                    
+                    canvas_qr2.remove();
                     qrcode.callback(qrcode.result);
 
-                canvas_qr2.remove();
-
+                }
+                
                 return qrcode.result;
             } else {
                 var image = new Image();
@@ -3588,7 +3593,7 @@
 
                     console.log(qrcode.result);
                 }
-                image.src = src;
+              //image.src = src;
 
 
             }
@@ -3768,9 +3773,10 @@
             var ret = new Array(qrcode.width * qrcode.height);
             for (var y = 0; y < qrcode.height; y++) {
                 for (var x = 0; x < qrcode.width; x++) {
-                    var gray = qrcode.getPixel(x, y);
-
-                    ret[x + y * qrcode.width] = gray;
+                    
+                    point = (x * 4) + (y * qrcode.width * 4);
+                    ret[x + y * qrcode.width]  = (qrcode.imagedata.data[point] * 33 + qrcode.imagedata.data[point + 1] * 34 + qrcode.imagedata.data[point + 2] * 33) / 100;
+                    
                 }
             }
             return ret;

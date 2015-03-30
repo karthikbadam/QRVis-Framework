@@ -41,6 +41,7 @@ svg {
 .treemap {
     border: 2px solid gray;
     display: inline-block;
+    background-color: mintcream;
 }
 
 div.hover_effect {
@@ -57,10 +58,9 @@ svg.hover_effect {
     display:inline-block;
     background-image: url("../images/gmap1.png");
     background-repeat: no-repeat;
-    background-size: auto;
+    background-size:cover;
    
 }
-
 
 .treemap-node {
     border: solid 1px gray;
