@@ -21,9 +21,8 @@ var allLoaded = false;
 var counter = 0;
 var loader;
 
-var CAPTURE_DELAY = 145; 
-var DECODE_DELAY = 45; 
-
+var CAPTURE_DELAY = 85;
+var DECODE_DELAY = 80;
 
 function gotSources(sourceInfos) {
 
@@ -59,16 +58,26 @@ function initCanvas(w, h) {
     gCtx = gCanvas.getContext("2d");
     gCtx.clearRect(0, 0, w, h);
 
-    var cropper = new CroppingTool();
+    //var cropper = new CroppingTool();
 
-    gCanvas.addEventListener('mousedown', cropper.start, false);
-    gCanvas.addEventListener('touchstart', cropper.start, false);
+    //    gCanvas.addEventListener('mousedown', cropper.start, false);
+    //    gCanvas.addEventListener('touchstart', cropper.start, false);
+    //
+    //    gCanvas.addEventListener('mousemove', cropper.move, false);
+    //    gCanvas.addEventListener('touchmove', cropper.move, false);
+    //
+    //    gCanvas.addEventListener('mouseup', cropper.end, false);
+    //    gCanvas.addEventListener('touchend', cropper.end, false);
 
-    gCanvas.addEventListener('mousemove', cropper.move, false);
-    gCanvas.addEventListener('touchmove', cropper.move, false);
+    $('body').append('<div id="highlightRect" style="background-color: rgba(255, 170, 170, 0.2); border: solid 1px #222; position: absolute; z-index: 100;"></div>');
 
-    gCanvas.addEventListener('mouseup', cropper.end, false);
-    gCanvas.addEventListener('touchend', cropper.end, false);
+    $('#highlightRect').width($(document).width()*0.65);
+    $('#highlightRect').height($(document).width()*0.65);
+    $('#highlightRect').offset({
+        left: $(document).width()/4,
+        top: $(document).height()/4
+    });
+
 
     $('#readQR').click(function () {
         
@@ -270,7 +279,7 @@ function read(a) {
 
         console.log(message);
         
-        alert(message);
+        //alert(message);
 
         readQRContent = message;
 
@@ -417,11 +426,13 @@ function initiate() {
 $(document).ready(function () {
 
     $('#analyzeButton').hide(); 
+    $('.btn_small').hide(); 
     
     $('#captureButton').click(function () {
 
         $('#captureButton').hide();
-        $('#analyzeButton').show(); 
+        $('#analyzeButton').show();
+        $('.btn_small').show(); 
         //show video if not present
         if (!$('#outdiv').html()) {
             captureCanvas = true;
@@ -442,6 +453,7 @@ $(document).ready(function () {
         //show blank screen for visualization
         $('#captureButton').show();
         $('#analyzeButton').hide(); 
+        $('.btn_small').hide(); 
         $('#highlightRect').remove();
         $('#outdiv').empty();
         $('#QRcapture').hide();

@@ -1522,7 +1522,7 @@
                     width: w,
                     height: h,
                     id: "QRcode" + id,
-                    correctLevel : QRCode.CorrectLevel.L
+                    correctLevel : QRCode.CorrectLevel.H
                 });
 
                 var qrText = data;

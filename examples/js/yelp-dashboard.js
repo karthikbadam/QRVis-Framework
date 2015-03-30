@@ -8,69 +8,216 @@ var business;
 
 var colorScale;
 
-$(document).ready(function () {
+var currentQRContent =
 
-    colorScale = d3.scale.category10();
+    $(document).ready(function () {
 
-    business = new Business();
+        colorScale = d3.scale.category10();
 
-    //queue for handling file reading
-    var q = queue();
+        business = new Business();
 
-    files.forEach(function (filename, i) {
+        $('#oButton').click(function () {
 
-        q.defer(function (callback) {
+            business.transformation = 1;
 
-            d3.csv(filename, function (error, data) {
+            var content = currentQRContent;
 
-                data.forEach(function (d) {
+            if (content.type == "map") {
 
-                    if (i == 1) {
+                business.createGeoVisualization(content);
+            }
 
-                        d.user_id = String(d.user_id);
-                        d.business_id = String(d.business_id);
-                        d.funny = +d.funny;
-                        d.stars = parseFloat(d.stars);
-                        d.useful = +d.useful;
-                        d.text = String(d.text);
-                        d.date = String(d.date);
+            if (content.type == "treemap") {
 
-                        business.addReview(d.business_id, d.text, d.stars);
+                business.createTreemap(content);
+            }
 
-                    } else if (i == 0) {
+            if (content.type == "companies") {
 
-                        d.business_id = String(d.business_id);
-                        d.categories1 = String(d.categories1);
-                        d.categories2 = String(d.categories2);
-                        d.review_count = +d.review_count;
-                        d.name = String(d.name);
-                        d.stars = parseFloat(d.stars);
-                        d.latitude = parseFloat(d.latitude);
-                        d.longitude = parseFloat(d.longitude);
+                business.createCompanies(content);
+            }
 
-                        business.addBusiness(d.business_id, d.latitude, d.longitude, d.categories1, d.categories2, d.stars, d.name, d.review_count);
+        });
 
-                        console.log("lat: " + d.latitude + ", long: " + d.longitude);
-                    }
+        $('#zButton').click(function () {
+
+            business.transformation = 2;
+
+            var content = currentQRContent;
+
+            if (content.type == "map") {
+
+                business.createGeoVisualization(content);
+            }
+
+            if (content.type == "treemap") {
+
+                business.createTreemap(content);
+            }
+
+            if (content.type == "companies") {
+
+                business.createCompanies(content);
+            }
+
+        });
+
+        $('#fButton').click(function () {
+
+            business.transformation = 3;
+
+            var content = currentQRContent;
+
+            if (content.type == "map") {
+
+                business.createGeoVisualization(content);
+            }
+
+            if (content.type == "treemap") {
+
+                business.createTreemap(content);
+            }
+
+            if (content.type == "companies") {
+
+                business.createCompanies(content);
+            }
+
+        });
+
+        $('#dButton').click(function () {
+
+            business.transformation = 4;
+
+            var content = currentQRContent;
+
+            if (content.type == "map") {
+
+                business.createGeoVisualization(content);
+            }
+
+            if (content.type == "treemap") {
+
+                business.createTreemap(content);
+            }
+
+            if (content.type == "companies") {
+
+                business.createCompanies(content);
+            }
+
+        });
+
+        $('#rButton').click(function () {
+
+            business.transformation = 5;
 
 
+            var content = currentQRContent;
+
+            if (content.type == "map") {
+
+                business.createGeoVisualization(content);
+            }
+
+            if (content.type == "treemap") {
+
+                business.createTreemap(content);
+            }
+
+            if (content.type == "companies") {
+
+                business.createCompanies(content);
+            }
+        });
+
+        $('#eButton').click(function () {
+
+            business.transformation = 6;
+
+            var content = currentQRContent;
+
+            if (content.type == "map") {
+
+                business.createGeoVisualization(content);
+            }
+
+            if (content.type == "treemap") {
+
+                business.createTreemap(content);
+            }
+
+            if (content.type == "companies") {
+
+                business.createCompanies(content);
+            }
+
+        });
+
+        $('#vanishButton').click(function () {
+
+            $(".qrcodeDiv").toggleClass("hide_effect");
+
+        });
+
+
+        //queue for handling file reading
+        var q = queue();
+
+        files.forEach(function (filename, i) {
+
+            q.defer(function (callback) {
+
+                d3.csv(filename, function (error, data) {
+
+                    data.forEach(function (d) {
+
+                        if (i == 1) {
+
+                            d.user_id = String(d.user_id);
+                            d.business_id = String(d.business_id);
+                            d.funny = +d.funny;
+                            d.stars = parseFloat(d.stars);
+                            d.useful = +d.useful;
+                            d.text = String(d.text);
+                            d.date = String(d.date);
+
+                            business.addReview(d.business_id, d.text, d.stars);
+
+                        } else if (i == 0) {
+
+                            d.business_id = String(d.business_id);
+                            d.categories1 = String(d.categories1);
+                            d.categories2 = String(d.categories2);
+                            d.review_count = +d.review_count;
+                            d.name = String(d.name);
+                            d.stars = parseFloat(d.stars);
+                            d.latitude = parseFloat(d.latitude);
+                            d.longitude = parseFloat(d.longitude);
+
+                            business.addBusiness(d.business_id, d.latitude, d.longitude, d.categories1, d.categories2, d.stars, d.name, d.review_count);
+
+                            console.log("lat: " + d.latitude + ", long: " + d.longitude);
+                        }
+
+
+
+                    });
+
+                    callback(null, data);
+
+                    data = null;
+                    delete data;
 
                 });
 
-                callback(null, data);
-
-                data = null;
-                delete data;
-
             });
-
         });
+
+        q.await(createVisualization);
+
+
     });
-
-    q.await(createVisualization);
-
-
-});
 
 function createVisualization(qrcontent) {
 
@@ -87,21 +234,23 @@ function createVisualization(qrcontent) {
         qrcontent = qrcontent.replace(/\\"/gi, "");
 
         var content = JSON.parse(qrcontent);
-        
+
+        currentQRContent = content;
+
         if (content.type == "map") {
-            
+
             business.createGeoVisualization(content);
         }
-        
+
         if (content.type == "treemap") {
 
             business.createTreemap(content);
         }
-        
+
         if (content.type == "companies") {
 
             business.createCompanies(content);
         }
-        
+
     }
 }

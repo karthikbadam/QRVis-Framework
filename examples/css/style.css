@@ -48,6 +48,10 @@ div.hover_effect {
     background-color: rgba(255, 100, 0, 0.1);
 }
 
+div.hide_effect {
+    display: none;
+}
+
 svg.hover_effect {
     background-color: rgba(255, 100, 0, 0.1);
     border: 2px solid red; 
@@ -137,3 +141,5 @@ span.stars, span.stars span {
 span.stars span {
     background-position: 0 0;
 }
+
+

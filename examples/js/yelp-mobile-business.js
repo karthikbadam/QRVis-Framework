@@ -10,10 +10,10 @@ var fontSize;
 var topCategoryList = ["Food", "Hotels", "Bars", "Active Life"];
 
 var divergingColorScale = ["rgba(202,0,32, 0.7)",
+"rgba(202, 0, 32, 0.7)",
 "rgba(244, 165, 130, 0.7)",
-"rgba(247, 247, 247, 0.7)",
-"rgba(146, 197, 222, 0.7)",
-"rgba(5, 113, 176, 0.7)",
+"rgba(244, 165, 130, 0.7)",
+"rgba(173, 206, 220, 0.8)",
 "rgba(10, 57, 107, 0.7)"];
 
 function Business(options) {
@@ -22,6 +22,8 @@ function Business(options) {
 
     _self.allBusiness = [];
     _self.allBusinessObject = {};
+    
+    _self.transformation = 1; 
 
 }
 
@@ -173,7 +175,7 @@ Business.prototype.createGeoVisualization = function (content) {
                 .append(type)
                 .attr("class", "bubble")
                 .attr("transform", function (d) {
-                    return "translate(" + eval(scale + "(" + field1 + ")") + ")";
+                    return "translate(" + eval("projection(" + "[d.lon, d.lat]" + ")") + ")";
 
                 })
                 .style("fill-opacity", function (d) {
@@ -201,7 +203,7 @@ Business.prototype.createGeoVisualization = function (content) {
                     return "brown";
                 })
                 .attr("r", function (d) {
-                    return eval(field2);
+                    return eval("3 + d.review_count/30");
 
                 })
                 .append("title")
@@ -222,7 +224,7 @@ Business.prototype.createTreemap = function (content) {
 
     var _self = this;
 
-    var transform = 3;
+    var transform = _self.transformation;
 
     var width = content.width * $(document).width(),
         height = content.height * $(document).height();
@@ -292,7 +294,7 @@ Business.prototype.createTreemap = function (content) {
             })
             .style("background-color", function (d) {
                 if (transform == 3 && _self.allCategoriesObject[d.key] && _self.allCategoriesObject[d.key] > 0) {
-                    return divergingColorScale[Math.floor(_self.categoryRatings[d.key] / _self.allCategoriesObject[d.key])];
+                    return divergingColorScale[Math.round(_self.categoryRatings[d.key] / _self.allCategoriesObject[d.key])];
                 }
 
                 return "white";
@@ -404,7 +406,7 @@ Business.prototype.createCompanies = function (content) {
 
     var _self = this;
 
-    var transform = 3;
+    var transform = _self.transformation;
 
     var width = $(document).width(),
         height = 0.8 * $(document).height();
@@ -517,9 +519,6 @@ Business.prototype.createCompanies = function (content) {
 
     }
 };
-
-
-
 
 Business.prototype.getWords = function (selection) {
 

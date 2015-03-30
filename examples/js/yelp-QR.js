@@ -84,7 +84,7 @@ QRVis.prototype.makeQR = function () {
 
     var _self = this;
 
-    _self.numberOfFrames = 10;
+    _self.numberOfFrames = 7;
 
     var w = 125;
     var h = 125;
@@ -97,7 +97,9 @@ QRVis.prototype.makeQR = function () {
     d3.select("#vizdashboard").append("div")
        .attr("id", "QRCodesDiv-" + _self.parentId);
     
-    qrvis.generate("QRCodesAnim-" + _self.parentId, "QRCodesDiv-" + _self.parentId, _self.numberOfFrames, data, w, h);
+    var QR_DELAY = 100; 
+    
+    qrvis.generate("QRCodesAnim-" + _self.parentId, "QRCodesDiv-" + _self.parentId, _self.numberOfFrames, data, w, h, QR_DELAY);
     
     var offset = $("#"+_self.parentId).offset();
     var offsetx = offset.left;
@@ -110,6 +112,7 @@ QRVis.prototype.makeQR = function () {
         .style("position", "relative");
     
     d3.select("#QRCodesDiv-" + _self.parentId)
+        .attr("class", "qrcodeDiv")
         .style("position", "absolute")
         .style("left", (offsetx + parentWidth - 170)+"px")
         .style("top", (offsety + parentHeight - 170)+"px");
