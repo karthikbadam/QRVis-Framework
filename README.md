@@ -18,6 +18,6 @@ How to build:
     * git clone https://github.com/karthikbadam/QRVis-Framework.git
     * make all
     
-This builds the QR-Vis framework library modules. To try out the examples, just copy the _examples/_ folder to a http server (for example, [Apache Tomcat](http://tomcat.apache.org/))
+This builds the QR-Vis framework library modules. To try out the examples, just copy the _examples/_ folder to a HTTP server (for example, [Apache Tomcat](http://tomcat.apache.org/)).
 
 <img src="https://raw.githubusercontent.com/karthikbadam/QRVis-Framework/master/images/qrvis.png" style="width:100%;">
