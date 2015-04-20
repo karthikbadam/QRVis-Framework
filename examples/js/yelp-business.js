@@ -263,6 +263,10 @@ Business.prototype.createTreemap = function () {
     div.on("mousedown", s.start);
     div.on("mousemove", s.move);
     div.on("mouseup", s.end);
+    
+    div.on("touchstart", s.start);
+    div.on("touchmove", s.move);
+    div.on("touchup", s.end);
 
     //need to add interaction to the QR code
     //associate it with an update
