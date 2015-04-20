@@ -20,4 +20,4 @@ How to build:
     
 This builds the QR-Vis framework library modules. To try out the examples, just copy the _examples/_ folder to a http server (for example, [Apache Tomcat](http://tomcat.apache.org/))
 
-<img src="">
+<img src="https://raw.githubusercontent.com/karthikbadam/QRVis-Framework/master/images/qrvis.png" style="width:100%;">
