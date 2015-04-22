@@ -1,2 +1,2 @@
 [ ] Clean up BusinessVis
-[ ] 
+[ ] Try BusinessVis on Note 4
