@@ -1,2 +1,6 @@
 [ ] Clean up BusinessVis
 [ ] Try BusinessVis on Note 4
+[ ] Add options to branch at three levels in the pipeline
+[ ] BusinessVis more transformations
+[ ] HaloCloud
+[ ] 
